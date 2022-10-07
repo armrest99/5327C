@@ -150,8 +150,8 @@ void toggleIndexer() {
     indexer = 127;
     pros::delay(650);
     indexer=0;
-    flywheel = 90;
-    flywheel2 = -90;
+    flywheel = 74;
+    flywheel2 = -74;
 	}
 }
 /**
