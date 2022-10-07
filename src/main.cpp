@@ -119,34 +119,10 @@ void disabled() {
 void competition_initialize() {
   // . . .
 }
-void toggleFlySpeed() {
-	if(flySpeed == 0){
-		flySpeed = 1;
-		flywheel = 90;
-    flywheel2 = -90;
-	}
-	else if(flySpeed == 1 && goingDown == false){
-		flySpeed = 2;
-		flywheel = 74;
-    flywheel2 = -74;
-	}
-	else if(flySpeed == 2){
-		flySpeed = 1;
-		goingDown = true;
-		flywheel = 50;
-    flywheel2 = -50;
-	}
-  else if (flySpeed == 1 && goingDown == true){
-    flySpeed = 0;
-    goingDown = false;
-    flywheel = 0;
-    flywheel2 = 0;
-  }
-}
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
-		intake = 127;
+		intake = -127;
 	}
 	else if(inSpeed == 1 && goingDown == false){
 		inSpeed = 2;
@@ -155,7 +131,7 @@ void toggleIntake() {
 	else if(inSpeed == 2){
 		inSpeed = 1;
 		goingDown = true;
-		intake = -127;
+		intake = 127;
 	}
 	else if(inSpeed == 1 && goingDown == true){
 		inSpeed = 0;
@@ -166,8 +142,16 @@ void toggleIntake() {
 void toggleIndexer() {
 	if(indexSpeed == 0){
 		indexer = 127;
-    pros::delay(1500);
+    pros::delay(200);
+    indexer = 0;
+    flywheel = 127;
+    flywheel2 = -127;
+    pros::delay(100);
+    indexer = 127;
+    pros::delay(650);
     indexer=0;
+    flywheel = 90;
+    flywheel2 = -90;
 	}
 }
 /**
@@ -213,19 +197,12 @@ void opcontrol() {
   bool buttonB;
 
   while (true) {
-
+    flywheel = 74;
+    flywheel2 = -74;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
     chassis.tank(); // Tank control
-
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false){
-			toggleFlySpeed();
-			r1Engaged = true;
-		}
-		else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			r1Engaged = false;
-		}
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && l1Engaged == false){
 			toggleIntake();
@@ -239,12 +216,12 @@ void opcontrol() {
       intake = -35;
     }
 
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged == false){
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false){
 			toggleIndexer();
-			aEngaged = true;
+			r1Engaged = true;
 		}
-		else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-			aEngaged = false;
+		else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+			r1Engaged = false;
 		}
     if (buttonB) {
       expansion.set_value(true);
