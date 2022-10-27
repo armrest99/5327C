@@ -12,11 +12,11 @@
 Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {-2, -5}
+  {-6, -5}
 
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  ,{3, 4}
+  ,{11, 4}
 
   // IMU Port
   ,21
@@ -174,6 +174,26 @@ void autonomous() {
   drive_and_turn(); // Calls selected auton from autonomous selector.
 }
 
+void runFlywheel(double velocity) {
+  flywheel = velocity;
+  flywheel2 = velocity;
+}
+
+void autoFlywheel(double velocity) {
+
+    // runFlywheel(velocity);
+
+    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / -2; 
+    double bangConstant = std::abs(velocity- avgFVel)/velocity; 
+
+    if (avgFVel < velocity) {
+        runFlywheel(velocity + (bangConstant * (avgFVel - velocity)));
+    }
+    else {
+        runFlywheel(velocity + (bangConstant * (velocity - avgFVel))); 
+    }
+
+}
 
 
 /**
@@ -201,6 +221,7 @@ void opcontrol() {
     flywheel2 = -74;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+    //autoFlywheel(100);
 
     chassis.tank(); // Tank control
 
@@ -208,7 +229,8 @@ void opcontrol() {
 			toggleIntake();
 			l1Engaged = true;
 		}
-		else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+    
+    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			l1Engaged = false;
 		}
 
@@ -220,13 +242,15 @@ void opcontrol() {
 			toggleIndexer();
 			r1Engaged = true;
 		}
-		else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+    else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
 			r1Engaged = false;
 		}
     if (buttonB) {
       expansion.set_value(true);
       expansion1.set_value(true);
     }
+
+
 
     // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
