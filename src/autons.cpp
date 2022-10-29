@@ -101,14 +101,14 @@ void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
 
-    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / -2; 
+    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     double bangConstant = std::abs(velocity- avgFVel)/velocity; 
 
     if (avgFVel < velocity) {
-        runFlywheel(velocity + (bangConstant * (avgFVel - velocity)));
+        runFlywheel(velocity + (bangConstant * (velocity - avgFVel)));
     }
     else {
-        runFlywheel(velocity + (bangConstant * (velocity - avgFVel))); 
+        runFlywheel(velocity + (bangConstant * (avgFVel - velocity))); 
     }
 
 }
@@ -119,8 +119,14 @@ void flywheel_task(void* param){
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-    if (a) autoFlywheel(400);
-    else runFlywheel(0);
+    if (a) {
+      pros::lcd::set_text(2,"a");
+      autoFlywheel(500);
+    }
+    else {
+      pros::lcd::set_text(2,"b");
+      runFlywheel(0);
+    }
     if(pros::Task::notify_take(true, TIMEOUT_MAX)){
       a = !a;
     }
@@ -141,7 +147,7 @@ void test(){
 
 void drive_example() {
   intake = -127;
-  pros::Task fly = pros::Task(flywheel_task, (void*) 80);
+  pros::Task fly = pros::Task(flywheel_task, (void*) 103);
   //autoFlywheel(103.0);
 
   pros::delay(200);
