@@ -121,7 +121,7 @@ void flywheel_task(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (a) {
       pros::lcd::set_text(2,"a");
-      autoFlywheel(500);
+      autoFlywheel(300);
     }
     else {
       pros::lcd::set_text(2,"b");
@@ -129,6 +129,7 @@ void flywheel_task(void* param){
     }
     if(pros::Task::notify_take(true, TIMEOUT_MAX)){
       a = !a;
+      if(a) runFlywheel(300);
     }
     //autoFlywheel(v);
   }
@@ -161,7 +162,7 @@ void drive_example() {
   chassis.set_turn_pid(-7, TURN_SPEED);
   chassis.wait_drive();
 
-  pros::delay(500);
+  pros::delay(1000);
 
   intake = -127;
 
