@@ -171,29 +171,10 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  drive_and_turn(); // Calls selected auton from autonomous selector.
+  drive_example(); // Calls selected auton from autonomous selector.
 }
 
-void runFlywheel(double velocity) {
-  flywheel = velocity;
-  flywheel2 = velocity;
-}
 
-void autoFlywheel(double velocity) {
-
-    // runFlywheel(velocity);
-
-    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / -2; 
-    double bangConstant = std::abs(velocity- avgFVel)/velocity; 
-
-    if (avgFVel < velocity) {
-        runFlywheel(velocity + (bangConstant * (avgFVel - velocity)));
-    }
-    else {
-        runFlywheel(velocity + (bangConstant * (velocity - avgFVel))); 
-    }
-
-}
 
 
 /**
