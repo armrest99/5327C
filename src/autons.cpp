@@ -93,32 +93,37 @@ void rightAuton() {
   
 }
 void runFlywheel(double velocity) {
-  flywheel = velocity;
-  flywheel2 = velocity;
+  flywheel.move_velocity(velocity);
+  flywheel2.move_velocity(velocity);
 }
 
-void autoFlywheel(double* velo) {
-    double velocity = *velo;
-    runFlywheel(velocity);
+void autoFlywheel(double velocity) {
+    //double velocity = *velo;
+    //runFlywheel(velocity);
 
-    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
+    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / -2; 
     double bangConstant = std::abs(velocity- avgFVel)/velocity; 
 
     if (avgFVel < velocity) {
-        runFlywheel(velocity + (bangConstant * (velocity - avgFVel)));
+        runFlywheel(velocity + (bangConstant * (avgFVel - velocity)));
     }
     else {
-        runFlywheel(velocity + (bangConstant * (avgFVel - velocity))); 
+        runFlywheel(velocity + (bangConstant * (velocity - avgFVel))); 
     }
 
 }
 
 void flywheel_task(void* param){
   double *v = (double*) param;
+  bool a = true;
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
-    pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-    //flywheel = 103;
+    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+    if (a) autoFlywheel(400);
+    else runFlywheel(0);
+    if(pros::Task::notify_take(true, TIMEOUT_MAX)){
+      a = !a;
+    }
     //autoFlywheel(v);
   }
 }
@@ -128,19 +133,15 @@ void flywheel_task(void* param){
 ///
 void test(){
   pros::Task fly = pros::Task(flywheel_task, (void*) 103);
-  pros::lcd::set_text(2,"gey");
-  pros::delay(1000);
+  pros::delay(10000);
   fly.notify();
-  pros::delay(1000);
-  fly.notify();
-  pros::delay(1000);
-  fly.notify();
+
   //flywheel = 0;
 }
 
 void drive_example() {
   intake = -127;
-  pros::Task fly = pros::Task(flywheel_task, (void*) 103);
+  pros::Task fly = pros::Task(flywheel_task, (void*) 80);
   //autoFlywheel(103.0);
 
   pros::delay(200);
@@ -167,7 +168,7 @@ void drive_example() {
   indexer = 0;
   
 
-  pros::delay(150);
+  pros::delay(500);
 
   indexer = 127;
   
