@@ -145,13 +145,13 @@ void toggleIndexer() {
     pros::delay(200);
     indexer = 0;
     flywheel = 127;
-    flywheel2 = -127;
+    flywheel2 = 127;
     pros::delay(100);
     indexer = 127;
     pros::delay(650);
     indexer=0;
     flywheel = 74;
-    flywheel2 = -74;
+    flywheel2 = 74;
 	}
 }
 /**
@@ -166,12 +166,13 @@ void toggleIndexer() {
  * from where it left off.
  */
 void autonomous() {
+  pros::lcd::initialize();
   chassis.reset_pid_targets(); // Resets PID targets to 0
   chassis.reset_gyro(); // Reset gyro position to 0
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  drive_example(); // Calls selected auton from autonomous selector.
+  test();//drive_example(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -199,7 +200,7 @@ void opcontrol() {
 
   while (true) {
     flywheel = 74;
-    flywheel2 = -74;
+    flywheel2 = 74;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     //autoFlywheel(100);

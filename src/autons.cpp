@@ -94,32 +94,54 @@ void rightAuton() {
 }
 void runFlywheel(double velocity) {
   flywheel = velocity;
-  flywheel2 = -velocity;
+  flywheel2 = velocity;
 }
 
-void autoFlywheel(double velocity) {
+void autoFlywheel(double* velo) {
+    double velocity = *velo;
+    runFlywheel(velocity);
 
-    // runFlywheel(velocity);
-
-    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / -2; 
+    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     double bangConstant = std::abs(velocity- avgFVel)/velocity; 
 
     if (avgFVel < velocity) {
-        runFlywheel(velocity + (bangConstant * (avgFVel - velocity)));
+        runFlywheel(velocity + (bangConstant * (velocity - avgFVel)));
     }
     else {
-        runFlywheel(velocity + (bangConstant * (velocity - avgFVel))); 
+        runFlywheel(velocity + (bangConstant * (avgFVel - velocity))); 
     }
 
 }
 
+void flywheel_task(void* param){
+  double *v = (double*) param;
+  //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+  while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
+    pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+    //flywheel = 103;
+    //autoFlywheel(v);
+  }
+}
 
 ///
 // Combining Turn + Drive
 ///
+void test(){
+  pros::Task fly = pros::Task(flywheel_task, (void*) 103);
+  pros::lcd::set_text(2,"gey");
+  pros::delay(1000);
+  fly.notify();
+  pros::delay(1000);
+  fly.notify();
+  pros::delay(1000);
+  fly.notify();
+  //flywheel = 0;
+}
+
 void drive_example() {
   intake = -127;
-  autoFlywheel(103);
+  pros::Task fly = pros::Task(flywheel_task, (void*) 103);
+  //autoFlywheel(103.0);
 
   pros::delay(200);
 
@@ -196,8 +218,7 @@ void drive_example() {
 
   indexer = 0;
 
-
-
+  fly.notify();
 
 
 
