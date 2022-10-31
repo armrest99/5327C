@@ -163,8 +163,21 @@ void leftAuton() {
   pros::delay(850);
   indexer = 0;
 
-  fly.notify();
+  //Low goal discs
+  chassis.set_drive_pid(10, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_turn_pid(10, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(10, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-10, TURN_SPEED);
+  chassis.wait_drive();
+  indexer = 127;
+  pros::delay(850);
+  indexer = 0;
 
+  
+  fly.notify();
 }
 
 
