@@ -101,16 +101,17 @@ void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
 
-    double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    double bangConstant = std::abs(avgFVel-velocity)/velocity; 
-    double multiplier = 0.75;
-    double add = 50.0;
+    double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
+    double bangConstant = std::abs((currentVelo-velocity)/velocity); 
 
-    if (avgFVel < velocity) {
-        runFlywheel(velocity + (bangConstant * (velocity - avgFVel)));
+    if (currentVelo > velocity) {
+        runFlywheel(velocity - bangConstant);
     }
-    else if (avgFVel < velocity) {
-        runFlywheel(velocity + (bangConstant * (avgFVel - velocity))); 
+    else if (currentVelo < velocity) {
+        runFlywheel(velocity + bangConstant); 
+    }
+    else{
+      runFlywheel(velocity);
     }
 
 }
