@@ -14,7 +14,8 @@ const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We d
                              // faster and one side slower, giving better heading correction.
 const int TURN_SPEED  = 90;
 const int SWING_SPEED = 90;
-
+bool oneSpeed = true;
+bool twoSpeed = false;
 
 
 ///
@@ -71,27 +72,6 @@ void two_mogo_constants() {
 ///
 // Drive Example
 ///
-void leftAuton() {
-  // The first parameter is target inches
-  // The second parameter is max speed the robot will drive at
-  // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
-  // for slew, only enable it when the drive distance is greater then the slew distance + a few inches
-
-  
-}
-
-
-
-///
-// Turn Example
-///
-void rightAuton() {
-  // The first parameter is target degrees
-  // The second parameter is max speed the robot will drive at
-
-
-  
-}
 void runFlywheel(double velocity) {
   flywheel.move_velocity(velocity);
   flywheel2.move_velocity(velocity);
@@ -100,7 +80,6 @@ void runFlywheel(double velocity) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     double bangConstant = std::abs((currentVelo-velocity)/velocity); 
 
@@ -113,26 +92,20 @@ void autoFlywheel(double velocity) {
     else{
       runFlywheel(velocity);
     }
-
 }
 
 void flywheel_task(void* param){
   double *v = (double*) param;
-  bool a = true;
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-    if (a) {
+    if (oneSpeed) {
       pros::lcd::set_text(2,"a");
       autoFlywheel(215);
     }
-    else {
+    else if (!oneSpeed) {
       pros::lcd::set_text(2,"b");
-      runFlywheel(0);
-    }
-    if(pros::Task::notify_take(true, TIMEOUT_MAX)){
-      a = !a;
-      if(a) runFlywheel(215);
+      autoFlywheel(150);
     }
     //autoFlywheel(v);
   }
@@ -149,189 +122,50 @@ void test(){
   //flywheel = 0;
 }
 
-void drive_example() {
+void leftAuton() {
+  //roller
+  chassis.set_drive_pid(1, DRIVE_SPEED, true);
   intake = -127;
-  pros::Task fly = pros::Task(flywheel_task, (void*) 103);
-  //autoFlywheel(103.0);
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+
+  pros::delay(100);
+  //Fire Preloads
+  chassis.set_drive_pid(-10, DRIVE_SPEED);
+  chassis.wait_drive();
+
+  chassis.set_turn_pid(-15, TURN_SPEED);
+  chassis.wait_drive();
 
   pros::delay(200);
 
-  intake = 0;
-
-  chassis.set_drive_pid(-10, DRIVE_SPEED);
-  chassis.wait_drive();
-  pros::delay(300);
-
-  chassis.set_turn_pid(-10, TURN_SPEED);
-  chassis.wait_drive();
-
-  pros::delay(800);
-
-  intake = -127;
-
   indexer = 127;
-  // flywheel = 127;
-  // flywheel2 = -127;
-  
-  pros::delay(2500);
-
+  pros::delay(850);
   indexer = 0;
-  
 
-  pros::delay(350);
+  pros::delay(100);
 
-  indexer = 127;
-  
-  pros::delay(250);
-  
-  indexer = 0;
-  // flywheel = 100;
-  // flywheel2 = -100;
-
-  chassis.set_drive_pid(0, DRIVE_SPEED);
+  //triple stack
+  chassis.set_turn_pid(-105, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(22, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(30, 60);
   chassis.wait_drive();
 
-
-  chassis.set_turn_pid(-115, TURN_SPEED);
-  chassis.wait_drive();
-  pros::delay(300);
-
-  chassis.set_drive_pid(22, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  chassis.set_drive_pid(30, 50, true);
-  chassis.wait_drive();
-  pros::delay(300);
-
-
+  //Fire triple stack
   chassis.set_turn_pid(-35, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(5, DRIVE_SPEED, true);
+  chassis.set_drive_pid(5, DRIVE_SPEED);
   chassis.wait_drive();
-  pros::delay(365);
+  pros::delay(100);
 
   indexer = 127;
-
-  pros::delay(275);
-
-  indexer = 0;
-
-  pros::delay(300);
-
-  indexer = 127;
-
-  pros::delay(300);
-
-  indexer = 0;
-
-  pros::delay(300);
-
-  indexer = 127;
-
-  pros::delay(300);
-
+  pros::delay(850);
   indexer = 0;
 
   fly.notify();
 
-
-
-
-
-
-
 }
-
-// void drive_example2() {
-//   intake = -127;
-//   //pros::Task fly = pros::Task(flywheel_task, (void*) 103);
-//   runFlywheel(400);
-
-//   pros::delay(200);
-
-//   intake = 0;
-
-//   chassis.set_drive_pid(-13, DRIVE_SPEED);
-//   chassis.wait_drive();
-//   pros::delay(300);
-
-//   chassis.set_turn_pid(-10, TURN_SPEED);
-//   chassis.wait_drive();
-
-//   pros::delay(800);
-
-//   intake = -127;
-
-//   indexer = 127;
-//   // flywheel = 127;
-//   // flywheel2 = -127;
-  
-//   pros::delay(200);
-
-//   indexer = 0;
-//   runFlywheel(300);
-
-//   pros::delay(200);
-
-//   indexer = 127;
-  
-//   pros::delay(300);
-  
-//   indexer = 0;
-//   // flywheel = 100;
-//   // flywheel2 = -100;
-
-//   chassis.set_drive_pid(0, DRIVE_SPEED);
-//   chassis.wait_drive();
-
-
-//   chassis.set_turn_pid(-110, TURN_SPEED);
-//   chassis.wait_drive();
-//   pros::delay(300);
-
-//   chassis.set_drive_pid(22, DRIVE_SPEED, true);
-//   chassis.wait_drive();
-//   chassis.set_drive_pid(30, 70, true);
-//   chassis.wait_drive();
-//   pros::delay(300);
-
-
-//   chassis.set_turn_pid(-50, TURN_SPEED);
-//   chassis.wait_drive();
-//   chassis.set_drive_pid(-5, DRIVE_SPEED, true);
-//   chassis.wait_drive();
-//   pros::delay(365);
-
-//   indexer = 127;
-
-//   pros::delay(275);
-
-//   indexer = 0;
-
-//   pros::delay(300);
-
-//   indexer = 127;
-
-//   pros::delay(300);
-
-//   indexer = 0;
-
-//   pros::delay(300);
-
-//   indexer = 127;
-
-//   pros::delay(300);
-
-//   indexer = 0;
-
-//   // fly.notify();
-//   runFlywheel(0);
-
-
-
-
-
-
-// }
 
 
 
