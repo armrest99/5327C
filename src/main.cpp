@@ -197,10 +197,17 @@ void opcontrol() {
 
   bool l2;
   bool buttonB;
-
+  bool slow = false;
   while (true) {
-    flywheel = 74;
-    flywheel2 = 74;
+    if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) slow = !slow;
+    if(slow){
+      flywheel = 60;
+      flywheel2 = 60;
+    }
+    else{
+      flywheel = 74;
+      flywheel2 = 74;
+      }
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     //autoFlywheel(100);

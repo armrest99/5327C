@@ -102,12 +102,14 @@ void autoFlywheel(double velocity) {
     //runFlywheel(velocity);
 
     double avgFVel = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    double bangConstant = std::abs(velocity- avgFVel)/velocity; 
+    double bangConstant = std::abs(avgFVel-velocity)/velocity; 
+    double multiplier = 0.75;
+    double add = 50.0;
 
     if (avgFVel < velocity) {
         runFlywheel(velocity + (bangConstant * (velocity - avgFVel)));
     }
-    else {
+    else if (avgFVel < velocity) {
         runFlywheel(velocity + (bangConstant * (avgFVel - velocity))); 
     }
 
@@ -121,7 +123,7 @@ void flywheel_task(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (a) {
       pros::lcd::set_text(2,"a");
-      autoFlywheel(300);
+      autoFlywheel(215);
     }
     else {
       pros::lcd::set_text(2,"b");
@@ -129,7 +131,7 @@ void flywheel_task(void* param){
     }
     if(pros::Task::notify_take(true, TIMEOUT_MAX)){
       a = !a;
-      if(a) runFlywheel(300);
+      if(a) runFlywheel(215);
     }
     //autoFlywheel(v);
   }
@@ -159,10 +161,10 @@ void drive_example() {
   chassis.wait_drive();
   pros::delay(300);
 
-  chassis.set_turn_pid(-7, TURN_SPEED);
+  chassis.set_turn_pid(-10, TURN_SPEED);
   chassis.wait_drive();
 
-  pros::delay(1000);
+  pros::delay(800);
 
   intake = -127;
 
@@ -170,16 +172,16 @@ void drive_example() {
   // flywheel = 127;
   // flywheel2 = -127;
   
-  pros::delay(200);
+  pros::delay(2500);
 
   indexer = 0;
   
 
-  pros::delay(500);
+  pros::delay(350);
 
   indexer = 127;
   
-  pros::delay(300);
+  pros::delay(250);
   
   indexer = 0;
   // flywheel = 100;
@@ -193,20 +195,22 @@ void drive_example() {
   chassis.wait_drive();
   pros::delay(300);
 
-  chassis.set_drive_pid(25, DRIVE_SPEED, true);
+  chassis.set_drive_pid(22, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_drive_pid(40, 30, true);
+  chassis.set_drive_pid(30, 50, true);
   chassis.wait_drive();
   pros::delay(300);
 
 
-  chassis.set_turn_pid(-30, TURN_SPEED);
+  chassis.set_turn_pid(-35, TURN_SPEED);
   chassis.wait_drive();
-  pros::delay(300);
+  chassis.set_drive_pid(5, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  pros::delay(365);
 
   indexer = 127;
 
-  pros::delay(300);
+  pros::delay(275);
 
   indexer = 0;
 
@@ -235,6 +239,98 @@ void drive_example() {
 
 
 }
+
+// void drive_example2() {
+//   intake = -127;
+//   //pros::Task fly = pros::Task(flywheel_task, (void*) 103);
+//   runFlywheel(400);
+
+//   pros::delay(200);
+
+//   intake = 0;
+
+//   chassis.set_drive_pid(-13, DRIVE_SPEED);
+//   chassis.wait_drive();
+//   pros::delay(300);
+
+//   chassis.set_turn_pid(-10, TURN_SPEED);
+//   chassis.wait_drive();
+
+//   pros::delay(800);
+
+//   intake = -127;
+
+//   indexer = 127;
+//   // flywheel = 127;
+//   // flywheel2 = -127;
+  
+//   pros::delay(200);
+
+//   indexer = 0;
+//   runFlywheel(300);
+
+//   pros::delay(200);
+
+//   indexer = 127;
+  
+//   pros::delay(300);
+  
+//   indexer = 0;
+//   // flywheel = 100;
+//   // flywheel2 = -100;
+
+//   chassis.set_drive_pid(0, DRIVE_SPEED);
+//   chassis.wait_drive();
+
+
+//   chassis.set_turn_pid(-110, TURN_SPEED);
+//   chassis.wait_drive();
+//   pros::delay(300);
+
+//   chassis.set_drive_pid(22, DRIVE_SPEED, true);
+//   chassis.wait_drive();
+//   chassis.set_drive_pid(30, 70, true);
+//   chassis.wait_drive();
+//   pros::delay(300);
+
+
+//   chassis.set_turn_pid(-50, TURN_SPEED);
+//   chassis.wait_drive();
+//   chassis.set_drive_pid(-5, DRIVE_SPEED, true);
+//   chassis.wait_drive();
+//   pros::delay(365);
+
+//   indexer = 127;
+
+//   pros::delay(275);
+
+//   indexer = 0;
+
+//   pros::delay(300);
+
+//   indexer = 127;
+
+//   pros::delay(300);
+
+//   indexer = 0;
+
+//   pros::delay(300);
+
+//   indexer = 127;
+
+//   pros::delay(300);
+
+//   indexer = 0;
+
+//   // fly.notify();
+//   runFlywheel(0);
+
+
+
+
+
+
+// }
 
 
 
