@@ -59,6 +59,7 @@ bool r2Engaged = false;
 bool l1Engaged = false;
 bool l2Engaged = false;
 bool aEngaged = false;
+bool tbhToggle = true;
 int angleOffset;
 
 
@@ -119,6 +120,29 @@ void disabled() {
 void competition_initialize() {
   // . . .
 }
+void runFlywheelDrive(double velocity) {
+  flywheel.move(velocity);
+  flywheel2.move(velocity);
+}
+void autoFlywheelDrive(double velocity) {
+    //double velocity = *velo;
+    //runFlywheel(velocity);
+    double error;
+    double prev_error;
+    double output;
+    double change = 0.5;
+    double tbh;
+    double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
+    error = velocity - currentVelo; 
+    output += change * error;
+
+    if (signbit(error)!=signbit(prev_error)) {
+        output = 0.5 * (output + tbh);
+        tbh = output;
+        prev_error = error;
+    }
+    runFlywheelDrive(output);
+}
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
@@ -142,17 +166,26 @@ void toggleIntake() {
 void toggleIndexer() {
 	if(indexSpeed == 0){
 		indexer = 127;
-    pros::delay(200);
+    pros::delay(850);
     indexer = 0;
-    flywheel = 127;
-    flywheel2 = 127;
-    pros::delay(100);
-    indexer = 127;
-    pros::delay(650);
-    indexer=0;
-    flywheel = 74;
-    flywheel2 = 74;
 	}
+}
+void flywheel_taskDrive(void* param){
+  double *v = (double*) param;
+  bool twoSpeed = true;
+  //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+  while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
+    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+    if (twoSpeed) {
+      pros::lcd::set_text(2,"a");
+      autoFlywheelDrive(525);
+    }
+    else if (!twoSpeed) {
+      pros::lcd::set_text(2,"b");
+      autoFlywheelDrive(50);
+    }
+    //autoFlywheel(v);
+  }
 }
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -194,24 +227,16 @@ void autonomous() {
 void opcontrol() {
   // This is preference to what you like to drive on.
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
-
+  if (tbhToggle){
+    pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
+  }
   bool l2;
   bool buttonB;
-  bool slow = false;
   while (true) {
-    if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) slow = !slow;
-    if(slow){
-      flywheel = 60;
-      flywheel2 = 60;
-    }
-    else{
-      flywheel = 74;
-      flywheel2 = 74;
-      }
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     //autoFlywheel(100);
-
+    
     chassis.tank(); // Tank control
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && l1Engaged == false){
