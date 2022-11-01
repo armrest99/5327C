@@ -172,7 +172,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  leftAuton(); // Calls selected auton from autonomous selector.
+  test(); // Calls selected auton from autonomous selector.
 }
 
 

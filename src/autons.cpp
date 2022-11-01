@@ -14,8 +14,6 @@ const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We d
                              // faster and one side slower, giving better heading correction.
 const int TURN_SPEED  = 90;
 const int SWING_SPEED = 90;
-bool oneSpeed = true;
-bool twoSpeed = false;
 
 
 ///
@@ -73,39 +71,55 @@ void two_mogo_constants() {
 // Drive Example
 ///
 void runFlywheel(double velocity) {
-  flywheel.move_velocity(velocity);
-  flywheel2.move_velocity(velocity);
+  flywheel.move(velocity);
+  flywheel2.move(velocity);
 }
 
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
+    double error;
+    double prev_error;
+    double output;
+    double change = 0.5;
+    double tbh;
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    double bangConstant = std::abs((currentVelo-velocity)/velocity); 
+    error = velocity - currentVelo; 
+    output += change * error;
 
-    if (currentVelo > velocity) {
-        runFlywheel(velocity - bangConstant);
+    if (signbit(error)!=signbit(prev_error)) {
+        output = 0.5 * (output + tbh);
+        tbh = output;
+        prev_error = error;
     }
-    else if (currentVelo < velocity) {
-        runFlywheel(velocity + bangConstant); 
-    }
-    else{
-      runFlywheel(velocity);
-    }
+    runFlywheel(output);
+    // double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
+    // double bangConstant = std::abs((currentVelo-velocity)/100); 
+
+    // if (currentVelo > velocity) {
+    //     runFlywheel(velocity - (bangConstant));
+    // }
+    // else if (currentVelo < velocity) {
+    //     runFlywheel(velocity + (bangConstant)); 
+    // }
+    // else{
+    //   runFlywheel(velocity);
+    // }
 }
 
 void flywheel_task(void* param){
   double *v = (double*) param;
+  bool oneSpeed = true;
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (oneSpeed) {
       pros::lcd::set_text(2,"a");
-      autoFlywheel(215);
+      autoFlywheel(800);
     }
     else if (!oneSpeed) {
       pros::lcd::set_text(2,"b");
-      autoFlywheel(150);
+      autoFlywheel(50);
     }
     //autoFlywheel(v);
   }
@@ -115,7 +129,7 @@ void flywheel_task(void* param){
 // Combining Turn + Drive
 ///
 void test(){
-  pros::Task fly = pros::Task(flywheel_task, (void*) 103);
+  pros::Task fly = pros::Task(flywheel_task, (void*) 1);
   pros::delay(10000);
   fly.notify();
 
