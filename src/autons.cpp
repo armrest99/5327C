@@ -136,6 +136,26 @@ void test(){
   //flywheel = 0;
 }
 
+void flyPID(float voltage) {
+  double error;
+	double kP = 0.1;
+	double kI = 0.001;
+  double kD = 0.01;
+	double totalError = 0;
+	double lastError = voltage;
+	while(error > 0){	
+		float currentVoltage = (flywheel.get_voltage() + flywheel2.get_voltage()) / 2.00;
+
+		error = voltage - currentVoltage;
+		double errorDifference = lastError - error;
+		totalError += error;
+		double motorSpeed = (error * kP) + (totalError * kI) + (errorDifference * kD);
+
+
+		lastError = error;
+	}
+}
+
 void leftAuton() {
   //roller
   chassis.set_drive_pid(1, DRIVE_SPEED, true);
