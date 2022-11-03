@@ -14,7 +14,11 @@ const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We d
                              // faster and one side slower, giving better heading correction.
 const int TURN_SPEED  = 90;
 const int SWING_SPEED = 90;
-
+double error;
+double prev_error;
+double output;
+double change = 1;
+double tbh;
 
 ///
 // Constants
@@ -78,11 +82,6 @@ void runFlywheel(double velocity) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double error;
-    double prev_error;
-    double output;
-    double change = 1;
-    double tbh;
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     error = velocity - currentVelo; 
     output += change * error;
@@ -90,9 +89,9 @@ void autoFlywheel(double velocity) {
     if (signbit(error)!=signbit(prev_error)) {
         output = 0.5 * (output + tbh);
         tbh = output;
-        
+        prev_error = error;
     }
-    prev_error = error;
+    
     runFlywheel(output);
     // double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     // double bangConstant = std::abs((currentVelo-velocity)/100); 
