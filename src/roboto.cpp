@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/adi.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <string>
@@ -16,6 +17,9 @@ pros::Motor intake(12, pros::E_MOTOR_GEARSET_06, 0,
                    pros::E_MOTOR_ENCODER_COUNTS);
 pros::ADIDigitalOut expansion('H', false);
 pros::ADIDigitalOut expansion1('G', false);
+
+
+
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 

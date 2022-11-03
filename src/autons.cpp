@@ -71,8 +71,8 @@ void two_mogo_constants() {
 // Drive Example
 ///
 void runFlywheel(double velocity) {
-  flywheel.move(velocity);
-  flywheel2.move(velocity);
+  flywheel.move_velocity(velocity);
+  flywheel2.move_velocity(velocity);
 }
 
 void autoFlywheel(double velocity) {
@@ -81,7 +81,7 @@ void autoFlywheel(double velocity) {
     double error;
     double prev_error;
     double output;
-    double change = 0.5;
+    double change = 1;
     double tbh;
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     error = velocity - currentVelo; 

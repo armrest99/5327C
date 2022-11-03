@@ -1,5 +1,6 @@
 #include "main.h"
 #include "autons.hpp"
+#include "pros/adi.hpp"
 #include "roboto/roboto.hpp"
 
 /////
@@ -7,6 +8,7 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
+pros::ADIAnalogIn sensor ('D');
 
 // Chassis constructor
 Drive chassis (
@@ -235,6 +237,7 @@ void opcontrol() {
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+    controller.print(1, 1, "value: %f", sensor.get_value());
     //autoFlywheel(100);
     
     chassis.tank(); // Tank control
