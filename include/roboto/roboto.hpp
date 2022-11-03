@@ -11,6 +11,7 @@ extern pros::Motor indexer;
 extern pros::Motor intake;
 extern pros::ADIDigitalOut expansion;
 extern pros::ADIDigitalOut expansion1;
+extern pros::ADIAnalogIn sensor;
 extern float currentX;
 extern float currentY;
 extern float pastFwd;

@@ -90,8 +90,9 @@ void autoFlywheel(double velocity) {
     if (signbit(error)!=signbit(prev_error)) {
         output = 0.5 * (output + tbh);
         tbh = output;
-        prev_error = error;
+        
     }
+    prev_error = error;
     runFlywheel(output);
     // double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     // double bangConstant = std::abs((currentVelo-velocity)/100); 
@@ -115,7 +116,7 @@ void flywheel_task(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (oneSpeed) {
       pros::lcd::set_text(2,"a");
-      autoFlywheel(800);
+      autoFlywheel(600);
     }
     else if (!oneSpeed) {
       pros::lcd::set_text(2,"b");
