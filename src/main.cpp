@@ -68,6 +68,7 @@ double prev_error;
 double output;
 double change = 5;
 double tbh;
+double flywheelSpeed;
 
 
 
@@ -136,14 +137,14 @@ void autoFlywheelDrive(double velocity) {
     //runFlywheel(velocity);
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     error = velocity - currentVelo; 
-    output += change * error;
+    flywheelSpeed += output + (change * error);
 
     if (signbit(error)!=signbit(prev_error)) {
         output = 0.5 * (output + tbh);
         tbh = output;
         prev_error = error;
     }
-    runFlywheelDrive(output);
+    runFlywheelDrive(flywheelSpeed);
 }
 void toggleIntake() {
 	if(inSpeed == 0){
@@ -218,7 +219,7 @@ void opcontrol() {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     controller.print(1, 1, "value: %f", sensor.get_value());
-    autoFlywheel(100);
+    autoFlywheelDrive(100);
     
     chassis.tank(); // Tank control
 
