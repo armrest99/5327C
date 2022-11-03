@@ -8,7 +8,6 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-pros::ADIAnalogIn sensor ('D');
 
 // Chassis constructor
 Drive chassis (
@@ -63,12 +62,12 @@ bool l2Engaged = false;
 bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
-double error;
-double prev_error;
-double output;
-double change = 5;
-double tbh;
-double flywheelSpeed;
+double errorDrive;
+double prev_errorDrive;
+double outputDrive;
+double changeDrive = 5;
+double tbhDrive;
+double flywheelSpeedDrive;
 
 
 
@@ -136,15 +135,15 @@ void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    error = velocity - currentVelo; 
-    flywheelSpeed += output + (change * error);
+    errorDrive = velocity - currentVelo; 
+    flywheelSpeedDrive += outputDrive + (changeDrive * errorDrive);
 
-    if (signbit(error)!=signbit(prev_error)) {
-        output = 0.5 * (output + tbh);
-        tbh = output;
-        prev_error = error;
+    if (signbit(errorDrive)!=signbit(prev_errorDrive)) {
+        outputDrive = 0.5 * (outputDrive + tbhDrive);
+        tbhDrive = outputDrive;
+        prev_errorDrive = errorDrive;
     }
-    runFlywheelDrive(flywheelSpeed);
+    runFlywheelDrive(flywheelSpeedDrive);
 }
 void toggleIntake() {
 	if(inSpeed == 0){
