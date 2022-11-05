@@ -136,7 +136,7 @@ void autoFlywheelDrive(double velocity) {
     //runFlywheel(velocity);
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     errorDrive = velocity - currentVelo; 
-    flywheelSpeedDrive += outputDrive + (changeDrive * errorDrive);
+    outputDrive += outputDrive + (changeDrive * errorDrive);
 
     if (signbit(errorDrive)!=signbit(prev_errorDrive)) {
         outputDrive = 0.5 * (outputDrive + tbhDrive);
