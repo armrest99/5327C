@@ -14,11 +14,7 @@ const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We d
                              // faster and one side slower, giving better heading correction.
 const int TURN_SPEED  = 90;
 const int SWING_SPEED = 90;
-double error;
-double prev_error;
-double output;
-double change = 1;
-double tbh;
+
 
 ///
 // Constants
@@ -75,13 +71,18 @@ void two_mogo_constants() {
 // Drive Example
 ///
 void runFlywheel(double velocity) {
-  flywheel.move_velocity(velocity);
-  flywheel2.move_velocity(velocity);
+  flywheel.move(velocity);
+  flywheel2.move(velocity);
 }
 
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
+    double error;
+    double prev_error;
+    double output;
+    double change = 0.5;
+    double tbh;
     double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     error = velocity - currentVelo; 
     output += change * error;
@@ -91,7 +92,6 @@ void autoFlywheel(double velocity) {
         tbh = output;
         prev_error = error;
     }
-    
     runFlywheel(output);
     // double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     // double bangConstant = std::abs((currentVelo-velocity)/100); 
@@ -115,7 +115,7 @@ void flywheel_task(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (oneSpeed) {
       pros::lcd::set_text(2,"a");
-      autoFlywheel(600);
+      autoFlywheel(800);
     }
     else if (!oneSpeed) {
       pros::lcd::set_text(2,"b");

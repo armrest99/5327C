@@ -7,9 +7,9 @@
 const float PI = 3.1415926;
 
 
-pros::Motor flywheel(16, pros::E_MOTOR_GEARSET_06, 1,
+pros::Motor flywheel(16, pros::E_MOTOR_GEARSET_06, 0,
                      pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor flywheel2(17, pros::E_MOTOR_GEARSET_06, 0,
+pros::Motor flywheel2(17, pros::E_MOTOR_GEARSET_06, 1,
                      pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor indexer(13, pros::E_MOTOR_GEARSET_06, 1,
                      pros::E_MOTOR_ENCODER_COUNTS);

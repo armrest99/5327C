@@ -1,6 +1,5 @@
 #include "main.h"
 #include "autons.hpp"
-#include "pros/adi.hpp"
 #include "roboto/roboto.hpp"
 
 /////
@@ -41,7 +40,6 @@ Drive chassis (
   // Left Tracking Wheel Ports (negative port will reverse it!)
   // ,{1, 2} // 3 wire encoder
   // ,8 // Rotation sensor
-
   // Right Tracking Wheel Ports (negative port will reverse it!)
   // ,{-3, -4} // 3 wire encoder
   // ,-9 // Rotation sensor
@@ -63,12 +61,10 @@ bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
 double errorDrive;
-double prev_errorDrive;
+double prev_errorDrive = 1;
 double outputDrive;
-double changeDrive = 5;
+double changeDrive = 0.5;
 double tbhDrive;
-double flywheelSpeedDrive;
-
 
 
 /**
@@ -127,23 +123,23 @@ void disabled() {
 void competition_initialize() {
   // . . .
 }
-void runFlywheelDrive(double velocity) {
-  flywheel.move_velocity(velocity);
-  flywheel2.move_velocity(velocity);
+void runFlywheelDrive(double SpeedFly) {
+  flywheel.move(SpeedFly);
+  flywheel2.move(SpeedFly);
 }
 void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
+    double currentVelo = (std::abs(flywheel2.get_actual_velocity()) + flywheel.get_actual_velocity()) / 2; 
     errorDrive = velocity - currentVelo; 
-    outputDrive += outputDrive + (changeDrive * errorDrive);
+    outputDrive += changeDrive * errorDrive;
 
     if (signbit(errorDrive)!=signbit(prev_errorDrive)) {
         outputDrive = 0.5 * (outputDrive + tbhDrive);
         tbhDrive = outputDrive;
         prev_errorDrive = errorDrive;
     }
-    runFlywheelDrive(flywheelSpeedDrive);
+    runFlywheelDrive(outputDrive);
 }
 void toggleIntake() {
 	if(inSpeed == 0){
@@ -168,9 +164,26 @@ void toggleIntake() {
 void toggleIndexer() {
 	if(indexSpeed == 0){
 		indexer = 127;
-    pros::delay(850);
+    pros::delay(650);
     indexer = 0;
 	}
+}
+void flywheel_taskDrive(void* param){
+  double *v = (double*) param;
+  bool twoSpeed = true;
+  //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+  while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
+    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+    if (twoSpeed) {
+      pros::lcd::set_text(2,"a");
+      autoFlywheelDrive(525);
+    }
+    else if (!twoSpeed) {
+      pros::lcd::set_text(2,"b");
+      autoFlywheelDrive(50);
+    }
+    //autoFlywheel(v);
+  }
 }
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -212,13 +225,15 @@ void autonomous() {
 void opcontrol() {
   // This is preference to what you like to drive on.
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
+  if (tbhToggle){
+    pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
+  }
   bool l2;
   bool buttonB;
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    controller.print(1, 1, "value: %f", sensor.get_value());
-    autoFlywheelDrive(100);
+    //autoFlywheel(100);
     
     chassis.tank(); // Tank control
 
