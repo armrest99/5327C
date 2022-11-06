@@ -123,23 +123,28 @@ void disabled() {
 void competition_initialize() {
   // . . .
 }
-void runFlywheelDrive(double SpeedFly) {
-  flywheel.move(SpeedFly);
-  flywheel2.move(SpeedFly);
+void runFlywheelDrive(double velocity) {
+  flywheel.move(velocity);
+  flywheel2.move(velocity);
 }
 void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double currentVelo = (std::abs(flywheel2.get_actual_velocity()) + flywheel.get_actual_velocity()) / 2; 
-    errorDrive = velocity - currentVelo; 
-    outputDrive += changeDrive * errorDrive;
+    double error;
+    double prev_error;
+    double output;
+    double change = 0.5;
+    double tbh;
+    double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
+    error = velocity - currentVelo; 
+    output += change * error;
 
-    if (signbit(errorDrive)!=signbit(prev_errorDrive)) {
-        outputDrive = 0.5 * (outputDrive + tbhDrive);
-        tbhDrive = outputDrive;
-        prev_errorDrive = errorDrive;
+    if (signbit(error)!=signbit(prev_error)) {
+        output = 0.5 * (output + tbh);
+        tbh = output;
+        prev_error = error;
     }
-    runFlywheelDrive(outputDrive);
+    runFlywheelDrive(output);
 }
 void toggleIntake() {
 	if(inSpeed == 0){
@@ -176,7 +181,7 @@ void flywheel_taskDrive(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (twoSpeed) {
       pros::lcd::set_text(2,"a");
-      autoFlywheelDrive(525);
+      autoFlywheelDrive(550);
     }
     else if (!twoSpeed) {
       pros::lcd::set_text(2,"b");
