@@ -129,7 +129,7 @@ void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
     double change = .025;
-    double currentVelo = flywheel.get_voltage()/10; 
+    double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDriveD + change * error;
     if (error * prev_errorDrive < 0) {
@@ -231,7 +231,7 @@ void opcontrol() {
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    autoFlywheelDrive(775);
+    autoFlywheelDrive(525);
     controller.print(1, 1, "speed %f", flywheel.get_actual_velocity());
     
     chassis.tank(); // Tank control
