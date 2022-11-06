@@ -60,11 +60,9 @@ bool l2Engaged = false;
 bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
-double errorDrive;
-double prev_errorDrive = 1;
-double outputDrive;
-double changeDrive = 0.5;
-double tbhDrive;
+double tbhDrive = 0.0;
+double prev_errorDrive = 0.0;
+double flyDriveD = 0.0;
 
 
 /**
@@ -124,27 +122,24 @@ void competition_initialize() {
   // . . .
 }
 void runFlywheelDrive(double velocity) {
-  flywheel.move(velocity);
-  flywheel2.move(velocity);
+  flywheel.move_voltage(velocity);
+  flywheel2.move_voltage(velocity);
 }
 void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double error;
-    double prev_error;
-    double output;
-    double change = 0.5;
-    double tbh;
-    double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    error = velocity - currentVelo; 
-    output += change * error;
-
-    if (signbit(error)!=signbit(prev_error)) {
-        output = 0.5 * (output + tbh);
-        tbh = output;
-        prev_error = error;
+    double change = .025;
+    double currentVelo = flywheel.get_voltage()/10; 
+    double error = velocity - currentVelo; 
+    double output = flyDriveD + change * error;
+    if (error * prev_errorDrive < 0) {
+        output = 0.5 * (output + tbhDrive);
+        tbhDrive = output;
     }
+    controller.print(1, 1, "flywheelspeed %f", currentVelo);
     runFlywheelDrive(output);
+    flyDriveD = output;
+    prev_errorDrive = error;
 }
 void toggleIntake() {
 	if(inSpeed == 0){
@@ -168,28 +163,26 @@ void toggleIntake() {
 }
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer = 127;
-    pros::delay(650);
-    indexer = 0;
+		indexer.move_relative(600,600);
 	}
 }
-void flywheel_taskDrive(void* param){
-  double *v = (double*) param;
-  bool twoSpeed = true;
-  //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-  while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
-    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-    if (twoSpeed) {
-      pros::lcd::set_text(2,"a");
-      autoFlywheelDrive(550);
-    }
-    else if (!twoSpeed) {
-      pros::lcd::set_text(2,"b");
-      autoFlywheelDrive(50);
-    }
-    //autoFlywheel(v);
-  }
-}
+// void flywheel_taskDrive(void* param){
+//   double *v = (double*) param;
+//   bool twoSpeed = true;
+//   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+//   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
+//     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+//     if (twoSpeed) {
+//       pros::lcd::set_text(2,"a");
+//       autoFlywheelDrive(550);
+//     }
+//     else if (!twoSpeed) {
+//       pros::lcd::set_text(2,"b");
+//       autoFlywheelDrive(50);
+//     }
+//     //autoFlywheel(v);
+//   }
+// }
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -230,15 +223,16 @@ void autonomous() {
 void opcontrol() {
   // This is preference to what you like to drive on.
   chassis.set_drive_brake(MOTOR_BRAKE_COAST);
-  if (tbhToggle){
-    pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
-  }
+  // if (tbhToggle){
+  //   pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
+  // }
   bool l2;
   bool buttonB;
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    //autoFlywheel(100);
+    autoFlywheelDrive(775);
+    controller.print(1, 1, "speed %f", flywheel.get_actual_velocity());
     
     chassis.tank(); // Tank control
 

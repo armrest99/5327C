@@ -66,33 +66,33 @@ void two_mogo_constants() {
 // }
 
 
-
+double tbh = 0.0;
+double prev_error = 0.0;
+double flyDrive = 0.0;
 ///
 // Drive Example
 ///
-void runFlywheel(double velocity) {
-  flywheel.move(velocity);
-  flywheel2.move(velocity);
+void runFlywheel(double speed) {
+  flywheel.move_voltage(speed);
+  flywheel2.move_voltage(speed);
 }
 
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double error;
-    double prev_error;
-    double output;
-    double change = 0.5;
-    double tbh;
-    double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    error = velocity - currentVelo; 
-    output += change * error;
-
-    if (signbit(error)!=signbit(prev_error)) {
+    double change = .025;
+    double currentVelo = flywheel.get_voltage()/10; 
+    double error = velocity - currentVelo; 
+    double output = flyDrive + change * error;
+    if (error * prev_error < 0) {
         output = 0.5 * (output + tbh);
         tbh = output;
-        prev_error = error;
     }
+    controller.print(1, 1, "flywheelspeed %f", currentVelo);
     runFlywheel(output);
+    flyDrive = output;
+    prev_error = error;
+    
     // double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
     // double bangConstant = std::abs((currentVelo-velocity)/100); 
 
@@ -115,7 +115,7 @@ void flywheel_task(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
     if (oneSpeed) {
       pros::lcd::set_text(2,"a");
-      autoFlywheel(800);
+      autoFlywheel(500);
     }
     else if (!oneSpeed) {
       pros::lcd::set_text(2,"b");
@@ -128,10 +128,10 @@ void flywheel_task(void* param){
 // Combining Turn + Drive
 ///
 void test(){
-  pros::Task fly = pros::Task(flywheel_task, (void*) 1);
-  pros::delay(10000);
-  fly.notify();
-
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  pros::delay(5000);
+  indexer = 127;
+ 
   //flywheel = 0;
 }
 
@@ -157,60 +157,65 @@ void flyPID(float voltage) {
 
 void leftAuton() {
   //roller
-  chassis.set_drive_pid(1, DRIVE_SPEED, true);
-  intake = -127;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  chassis.set_drive_pid(5, DRIVE_SPEED, true);
+  intake = -127;
+  
 
-  pros::delay(100);
+  pros::delay(300);
   //Fire Preloads
-  chassis.set_drive_pid(-10, DRIVE_SPEED);
+  chassis.set_drive_pid(-13, DRIVE_SPEED);
   chassis.wait_drive();
 
   chassis.set_turn_pid(-15, TURN_SPEED);
   chassis.wait_drive();
 
   pros::delay(200);
-
-  indexer = 127;
-  pros::delay(850);
-  indexer = 0;
-
-  pros::delay(100);
+  indexer.move_relative(650, 600);
+  pros::delay(300);
+  indexer.move_relative(650,600);
 
   //triple stack
-  chassis.set_turn_pid(-105, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(22, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(30, 60);
-  chassis.wait_drive();
+  // chassis.set_turn_pid(-120, TURN_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(22, DRIVE_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(30, 60);
+  // chassis.wait_drive();
 
-  //Fire triple stack
-  chassis.set_turn_pid(-35, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(5, DRIVE_SPEED);
-  chassis.wait_drive();
-  pros::delay(100);
+  // //Fire triple stack
+  // chassis.set_turn_pid(-35, TURN_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(-2, DRIVE_SPEED);
+  // chassis.wait_drive();
+  // pros::delay(100);
 
-  indexer = 127;
-  pros::delay(850);
-  indexer = 0;
+  // indexer = 127;
+  // pros::delay(200);
+  // indexer = 0;
+  // pros::delay(100);
+  // indexer = 127;
+  // pros::delay(200);
+  // indexer = 0;
+  // pros::delay(100);
+  // indexer = 127;
+  // pros::delay(200);
+  // indexer = 0;
 
-  //Low goal discs
-  chassis.set_drive_pid(10, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_turn_pid(10, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(10, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_turn_pid(-10, TURN_SPEED);
-  chassis.wait_drive();
-  indexer = 127;
-  pros::delay(850);
-  indexer = 0;
 
-  
-  fly.notify();
+  // //Low goal discs
+  // chassis.set_drive_pid(10, DRIVE_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_turn_pid(10, TURN_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(10, DRIVE_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_turn_pid(-10, TURN_SPEED);
+  // chassis.wait_drive();
+  // indexer = 127;
+  // pros::delay(850);
+  // indexer = 0;
+  // fly.notify();
 }
 
 

@@ -7,8 +7,8 @@
 
 void update(void *args) {
   flywheelGraphData *argsStruct = (flywheelGraphData *)args;
-  pros::Motor flywheelMotor1 = *(argsStruct->motor1);
-  pros::Motor flywheelMotor2 = *(argsStruct->motor2);
+  pros::Motor flywheelMotor1 = *(argsStruct->flywheel);
+  pros::Motor flywheelMotor2 = *(argsStruct->flywheel2);
   while (true) {
     double motorRPM1 = flywheelMotor1.get_actual_velocity();
     double motorRPM2 = flywheelMotor2.get_actual_velocity();
@@ -20,7 +20,7 @@ void update(void *args) {
 }
 
 // todo: add pros task
-flywheelGraphData setup_graph(pros::Motor *motor1, pros::Motor *motor2) {
+flywheelGraphData setup_graph(pros::Motor *flywheel, pros::Motor *flywheel2) {
   // printf("Beginning setup_graph");
   lv_obj_t *chart = lv_chart_create(lv_scr_act(), nullptr);
   lv_obj_set_size(chart, 500, 200);
@@ -31,5 +31,5 @@ flywheelGraphData setup_graph(pros::Motor *motor1, pros::Motor *motor2) {
   lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
 
   lv_chart_set_range(chart, 0, 650);
-  return flywheelGraphData{chart, series1, series2, motor1, motor2};
+  return flywheelGraphData{chart, series1, series2, flywheel, flywheel2};
 }
