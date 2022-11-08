@@ -80,7 +80,7 @@ void runFlywheel(double speed) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = .025;
+    double change = .25;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDrive + change * error;
@@ -112,15 +112,8 @@ void flywheel_task(void* param){
   bool oneSpeed = true;
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
-    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-    if (oneSpeed) {
-      pros::lcd::set_text(2,"a");
-      autoFlywheel(500);
-    }
-    else if (!oneSpeed) {
-      pros::lcd::set_text(2,"b");
-      autoFlywheel(50);
-    }
+    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
+      autoFlywheel(375);
     //autoFlywheel(v);
   }
 }
@@ -172,7 +165,7 @@ void leftAuton() {
 
   pros::delay(200);
   indexer.move_relative(650, 600);
-  pros::delay(300);
+  pros::delay(600);
   indexer.move_relative(650,600);
 
   //triple stack

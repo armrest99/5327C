@@ -12,11 +12,10 @@
 Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {-6, -5}
-
+  {-8, -14}
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  ,{11, 4}
+  ,{9, 6}
 
   // IMU Port
   ,21
@@ -128,7 +127,7 @@ void runFlywheelDrive(double velocity) {
 void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = .025;
+    double change = .25;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDriveD + change * error;
@@ -163,7 +162,7 @@ void toggleIntake() {
 }
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer.move_relative(600,600);
+		indexer.move_relative(1750,600);
 	}
 }
 // void flywheel_taskDrive(void* param){
@@ -201,7 +200,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  test(); // Calls selected auton from autonomous selector.
+  leftAuton(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -231,7 +230,7 @@ void opcontrol() {
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    autoFlywheelDrive(525);
+    autoFlywheelDrive(325);
     controller.print(1, 1, "speed %f", flywheel.get_actual_velocity());
     
     chassis.tank(); // Tank control
