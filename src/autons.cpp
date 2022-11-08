@@ -72,9 +72,9 @@ double flyDrive = 0.0;
 ///
 // Drive Example
 ///
-void runFlywheel(double speed) {
-  flywheel.move_voltage(speed);
-  flywheel2.move_voltage(speed);
+void runFlywheel(double velocity) {
+  flywheel.move_voltage(velocity);
+  flywheel2.move_voltage(velocity);
 }
 
 void autoFlywheel(double velocity) {
@@ -92,19 +92,6 @@ void autoFlywheel(double velocity) {
     runFlywheel(output);
     flyDrive = output;
     prev_error = error;
-    
-    // double currentVelo = (flywheel2.get_actual_velocity() + flywheel.get_actual_velocity()) / 2; 
-    // double bangConstant = std::abs((currentVelo-velocity)/100); 
-
-    // if (currentVelo > velocity) {
-    //     runFlywheel(velocity - (bangConstant));
-    // }
-    // else if (currentVelo < velocity) {
-    //     runFlywheel(velocity + (bangConstant)); 
-    // }
-    // else{
-    //   runFlywheel(velocity);
-    // }
 }
 
 void flywheel_task(void* param){
@@ -113,8 +100,9 @@ void flywheel_task(void* param){
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
-      autoFlywheel(375);
+    autoFlywheel(480);
     //autoFlywheel(v);
+    pros::delay(ez::util::DELAY_TIME);
   }
 }
 ///
@@ -160,13 +148,13 @@ void leftAuton() {
   chassis.set_drive_pid(-13, DRIVE_SPEED);
   chassis.wait_drive();
 
-  chassis.set_turn_pid(-15, TURN_SPEED);
+  chassis.set_turn_pid(-13, TURN_SPEED);
   chassis.wait_drive();
 
-  pros::delay(200);
-  indexer.move_relative(650, 600);
-  pros::delay(600);
-  indexer.move_relative(650,600);
+  pros::delay(1000);
+  indexer.move_relative(600, 600);
+  pros::delay(1000);
+  indexer.move_relative(600,600);
 
   //triple stack
   // chassis.set_turn_pid(-120, TURN_SPEED);
