@@ -152,9 +152,9 @@ void leftAuton() {
   chassis.wait_drive();
 
   pros::delay(1000);
-  indexer.move_relative(600, 600);
-  pros::delay(1000);
-  indexer.move_relative(600,600);
+  indexer.move_relative(580, 600);
+  pros::delay(1100);
+  indexer.move_relative(580,600);
 
   //triple stack
   // chassis.set_turn_pid(-120, TURN_SPEED);
