@@ -66,7 +66,7 @@ void two_mogo_constants() {
 // }
 
 
-double tbh = 0.0;
+double tbh = 80.0;
 double prev_error = 0.0;
 double flyDrive = 0.0;
 ///
@@ -148,13 +148,13 @@ void leftAuton() {
   chassis.set_drive_pid(-13, DRIVE_SPEED);
   chassis.wait_drive();
 
-  chassis.set_turn_pid(-13, TURN_SPEED);
+  chassis.set_turn_pid(-15, TURN_SPEED);
   chassis.wait_drive();
 
   pros::delay(1000);
-  indexer.move_relative(580, 600);
-  pros::delay(1100);
-  indexer.move_relative(580,600);
+  indexer.move_relative(600, 600);
+  pros::delay(1500);
+  indexer.move_relative(600,600);
 
   //triple stack
   // chassis.set_turn_pid(-120, TURN_SPEED);

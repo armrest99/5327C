@@ -82,6 +82,7 @@ void initialize() {
   chassis.set_curve_default(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
   void default_constants(); // Set the drive to your own constants from autons.cpp!
   void exit_condition_defaults(); // Set the exit conditions to your own constants from autons.cpp!
+  indexer.tare_position();
 
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
   // chassis.set_left_curve_buttons (pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT); // If using tank, only the left side is used.
@@ -162,7 +163,7 @@ void toggleIntake() {
 }
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer.move_relative(1750,600);
+		indexer.move_relative(1750,400);
 	}
 }
 // void flywheel_taskDrive(void* param){
