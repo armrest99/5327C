@@ -231,7 +231,7 @@ void opcontrol() {
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    autoFlywheelDrive(525);
+    autoFlywheelDrive(425);
     controller.print(1, 1, "speed %f", flywheel.get_actual_velocity());
     
     chassis.tank(); // Tank control
