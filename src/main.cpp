@@ -163,7 +163,7 @@ void toggleIntake() {
 }
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer.move_relative(1750,400);
+		indexer.move_relative(580,200);
 	}
 }
 // void flywheel_taskDrive(void* param){

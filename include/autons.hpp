@@ -16,6 +16,7 @@ void interfered_example();
 void leftAuton();
 void rightAuton();
 void flyPID();
+void left_awp();
 
 void default_constants();
 void one_mogo_constants();
