@@ -163,7 +163,13 @@ void toggleIntake() {
 }
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer.move_relative(580,200);
+		indexer.move_relative(575,600);
+    pros::delay(200);
+    flywheel = 127;
+    flywheel2 = 127;
+    indexer.move_relative(1275,600);
+    pros::delay(500);
+    indexer = 0;
 	}
 }
 // void flywheel_taskDrive(void* param){
@@ -231,7 +237,7 @@ void opcontrol() {
   while (true) {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    autoFlywheelDrive(425);
+    autoFlywheelDrive(390);
     controller.print(1, 1, "speed %f", flywheel.get_actual_velocity());
     
     chassis.tank(); // Tank control

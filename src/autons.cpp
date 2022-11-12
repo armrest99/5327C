@@ -198,14 +198,14 @@ void leftAuton() {
 
   pros::delay(300);
   //Fire Preloads
-  chassis.set_drive_pid(-13, DRIVE_SPEED);
+  chassis.set_drive_pid(-13, DRIVE_SPEED, true);
   chassis.wait_drive();
 
   chassis.set_turn_pid(-13, TURN_SPEED);
   chassis.wait_drive();
 
   pros::delay(1000);
-  indexer.move_relative(600, 400);
+  indexer.move_relative(600, 600);
   pros::delay(1500);
   indexer.move_relative(600,600);
   
@@ -223,15 +223,15 @@ void leftAuton() {
   chassis.wait_drive();
 
   // //Fire triple stack
-  chassis.set_turn_pid(-40, TURN_SPEED);
+  chassis.set_turn_pid(-41, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-5, DRIVE_SPEED);
+  chassis.set_drive_pid(-11, DRIVE_SPEED);
   chassis.wait_drive();
   pros::delay(100);
   indexer.move_relative(600,600);
   pros::delay(1250);
   indexer.move_relative(600, 600);
-  pros::delay(1000);
+  pros::delay(800);
   indexer.move_relative(600,600);
 
 
