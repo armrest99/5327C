@@ -144,45 +144,46 @@ void rightAuton() {
   //roller
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
   intake = -127;
-  chassis.set_drive_pid(12, DRIVE_SPEED);
+  chassis.set_drive_pid(20, DRIVE_SPEED);
   chassis.wait_drive();
   chassis.set_turn_pid(90, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(2, DRIVE_SPEED);
+  chassis.set_drive_pid(4, DRIVE_SPEED);
   chassis.wait_drive();
   
-  pros::delay(300);
+  
   // fire preloads
   chassis.set_drive_pid(-13, DRIVE_SPEED);
   chassis.wait_drive();
 
-  chassis.set_turn_pid(13, TURN_SPEED);
+  chassis.set_turn_pid(95, TURN_SPEED);
   chassis.wait_drive();
 
   pros::delay(1000);
   indexer.move_relative(600, 400);
-  pros::delay(1500);
+  pros::delay(900);
   indexer.move_relative(600,600);
+  pros::delay(200);
 
   // triple disc
-  chassis.set_turn_pid(120, TURN_SPEED);
+  chassis.set_turn_pid(220, TURN_SPEED);
   chassis.wait_drive();
   oneSpeed = false;
   chassis.set_drive_pid(22, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(30, 60);
+  chassis.set_drive_pid(30, 50);
   chassis.wait_drive();
 
   //Fire triple stack
-  chassis.set_turn_pid(40, TURN_SPEED);
+  chassis.set_turn_pid(130, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-5, DRIVE_SPEED);
+  chassis.set_drive_pid(-2, DRIVE_SPEED);
   chassis.wait_drive();
   pros::delay(100);
   indexer.move_relative(600,600);
   pros::delay(1250);
   indexer.move_relative(600, 600);
-  pros::delay(1000);
+  pros::delay(750);
   indexer.move_relative(600,600);
 
 
@@ -190,7 +191,68 @@ void rightAuton() {
   }
 
 void leftAuton() {
-  //roller
+     //roller
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  chassis.set_drive_pid(3, DRIVE_SPEED, true);
+  intake = -127;
+  
+
+  pros::delay(300);
+  //Fire Preloads
+  chassis.set_drive_pid(-13, DRIVE_SPEED, true);
+  chassis.wait_drive();
+
+  chassis.set_turn_pid(-13, TURN_SPEED);
+  chassis.wait_drive();
+
+  pros::delay(1000);
+  indexer.move_relative(600, 600);
+  pros::delay(1500);
+  indexer.move_relative(600,600);
+  
+
+  pros::delay(400);
+
+
+  //triple stack
+  chassis.set_turn_pid(-120, TURN_SPEED);
+  chassis.wait_drive();
+  oneSpeed = false;
+  chassis.set_drive_pid(22, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(30, 60);
+  chassis.wait_drive();
+
+  // //Fire triple stack
+  chassis.set_turn_pid(-41, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-11, DRIVE_SPEED);
+  chassis.wait_drive();
+  pros::delay(100);
+  indexer.move_relative(600,600);
+  pros::delay(1250);
+  indexer.move_relative(600, 600);
+  pros::delay(800);
+  indexer.move_relative(600,600);
+
+  // //Low goal discs
+  // chassis.set_drive_pid(10, DRIVE_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_turn_pid(10, TURN_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(10, DRIVE_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_turn_pid(-10, TURN_SPEED);
+  // chassis.wait_drive();
+  // indexer = 127;
+  // pros::delay(850);
+  // indexer = 0;
+  // fly.notify();
+}
+
+
+void left_awp(){
+    //roller
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
@@ -235,72 +297,14 @@ void leftAuton() {
   indexer.move_relative(600,600);
 
 
-  // //Low goal discs
-  // chassis.set_drive_pid(10, DRIVE_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_turn_pid(10, TURN_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_drive_pid(10, DRIVE_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_turn_pid(-10, TURN_SPEED);
-  // chassis.wait_drive();
-  // indexer = 127;
-  // pros::delay(850);
-  // indexer = 0;
-  // fly.notify();
-}
 
-
-void left_awp(){
-    //roller
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
-  chassis.set_drive_pid(3, DRIVE_SPEED, true);
-  intake = -127;
-  
-
-  pros::delay(300);
-  //Fire Preloads
-  chassis.set_drive_pid(-13, DRIVE_SPEED);
-  chassis.wait_drive();
-
-  chassis.set_turn_pid(-13, TURN_SPEED);
-  chassis.wait_drive();
-
-  pros::delay(1000);
-  indexer.move_relative(600, 400);
-  pros::delay(1500);
-  indexer.move_relative(600,600);
-  
-
-  pros::delay(400);
-
-
-  //triple stack
-  chassis.set_turn_pid(-120, TURN_SPEED);
-  chassis.wait_drive();
-  oneSpeed = false;
-  chassis.set_drive_pid(22, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(30, 60);
-  chassis.wait_drive();
-
-  // //Fire triple stack
-  chassis.set_turn_pid(-40, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(-5, DRIVE_SPEED);
-  chassis.wait_drive();
-  pros::delay(100);
-  indexer.move_relative(600,600);
-  pros::delay(1250);
-  indexer.move_relative(600, 600);
-  pros::delay(1000);
-  indexer.move_relative(600,600);
+  // additional part
 
   pros::delay(200);
-  chassis.set_turn_pid(40, TURN_SPEED);
+  chassis.set_turn_pid(-130, TURN_SPEED);
   chassis.wait_drive();
 
-  chassis.set_drive_pid(40, DRIVE_SPEED);
+  chassis.set_drive_pid(80, DRIVE_SPEED);
   chassis.wait_drive();
 }
 
