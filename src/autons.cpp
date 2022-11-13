@@ -78,6 +78,7 @@ void runFlywheel(double velocity) {
 }
 
 void autoFlywheel(double velocity) {
+  while(true){
     //double velocity = *velo;
     //runFlywheel(velocity);
     double change = .25;
@@ -92,29 +93,15 @@ void autoFlywheel(double velocity) {
     runFlywheel(output);
     flyDrive = output;
     prev_error = error;
-}
-
-void flywheel_task(void* param){
-  double *v = (double*) param;
-  
-  //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
-  while(true){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
-    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
-    if (oneSpeed){
-      autoFlywheel(480);
-    }
-    else{
-      autoFlywheel(440);
-    }
-    //autoFlywheel(v);
     pros::delay(ez::util::DELAY_TIME);
   }
 }
+
 ///
 // Combining Turn + Drive
 ///
 void test(){
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  autoFlywheel(470);
   pros::delay(5000);
   indexer = 127;
  
@@ -142,7 +129,7 @@ void flyPID(float voltage) {
 }
 void rightAuton() {
   //roller
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  autoFlywheel(470);
   intake = -127;
   chassis.set_drive_pid(20, DRIVE_SPEED);
   chassis.wait_drive();
@@ -168,7 +155,6 @@ void rightAuton() {
   // triple disc
   chassis.set_turn_pid(220, TURN_SPEED);
   chassis.wait_drive();
-  oneSpeed = false;
   chassis.set_drive_pid(22, DRIVE_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(30, 50);
@@ -185,14 +171,13 @@ void rightAuton() {
   indexer.move_relative(600, 600);
   pros::delay(750);
   indexer.move_relative(600,600);
-
-
+  oneSpeed = false;
 
   }
 
 void leftAuton() {
      //roller
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  autoFlywheel(470);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
   
@@ -253,7 +238,7 @@ void leftAuton() {
 
 void left_awp(){
     //roller
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  autoFlywheel(470);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
   
@@ -268,7 +253,7 @@ void left_awp(){
 
   pros::delay(1000);
   indexer.move_relative(600, 600);
-  pros::delay(1500);
+  pros::delay(1300);
   indexer.move_relative(600,600);
   
 
@@ -304,7 +289,7 @@ void left_awp(){
   chassis.set_turn_pid(-130, TURN_SPEED);
   chassis.wait_drive();
 
-  chassis.set_drive_pid(80, DRIVE_SPEED);
+  chassis.set_drive_pid(80, 127);
   chassis.wait_drive();
 }
 

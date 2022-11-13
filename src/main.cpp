@@ -78,7 +78,7 @@ void initialize() {
 
   // Configure your chassis controls
   chassis.toggle_modify_curve_with_controller(true); // Enables modifying the controller curve with buttons on the joysticks
-  chassis.set_active_brake(0); // Sets the active brake kP. We recommend 0.1.
+  chassis.set_active_brake(0.1); // Sets the active brake kP. We recommend 0.1.
   chassis.set_curve_default(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
   void default_constants(); // Set the drive to your own constants from autons.cpp!
   void exit_condition_defaults(); // Set the exit conditions to your own constants from autons.cpp!
@@ -119,28 +119,28 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-  // . . .
+  initialize();
 }
-void runFlywheelDrive(double velocity) {
-  flywheel.move_voltage(velocity);
-  flywheel2.move_voltage(velocity);
-}
-void autoFlywheelDrive(double velocity) {
-    //double velocity = *velo;
-    //runFlywheel(velocity);
-    double change = .25;
-    double currentVelo = flywheel.get_actual_velocity(); 
-    double error = velocity - currentVelo; 
-    double output = flyDriveD + change * error;
-    if (error * prev_errorDrive < 0) {
-        output = 0.5 * (output + tbhDrive);
-        tbhDrive = output;
-    }
-    controller.print(1, 1, "flywheelspeed %f", currentVelo);
-    runFlywheelDrive(output);
-    flyDriveD = output;
-    prev_errorDrive = error;
-}
+// void runFlywheelDrive(double velocity) {
+//   flywheel.move_voltage(velocity);
+//   flywheel2.move_voltage(velocity);
+// }
+// void autoFlywheelDrive(double velocity) {
+//     //double velocity = *velo;
+//     //runFlywheel(velocity);
+//     double change = .25;
+//     double currentVelo = flywheel.get_actual_velocity(); 
+//     double error = velocity - currentVelo; 
+//     double output = flyDriveD + change * error;
+//     if (error * prev_errorDrive < 0) {
+//         output = 0.5 * (output + tbhDrive);
+//         tbhDrive = output;
+//     }
+//     controller.print(1, 1, "flywheelspeed %f", currentVelo);
+//     runFlywheelDrive(output);
+//     flyDriveD = output;
+//     prev_errorDrive = error;
+// }
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
@@ -161,15 +161,22 @@ void toggleIntake() {
 		intake = 0;
 	}
 }
+
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer.move_relative(575,600);
+		indexer = 127;
     pros::delay(200);
-    flywheel = 127;
-    flywheel2 = 127;
-    indexer.move_relative(1275,600);
-    pros::delay(500);
     indexer = 0;
+    flywheel = 127;
+    flywheel2 = -127;
+    pros::delay(100);
+    indexer = 127;
+    pros::delay(450);
+    indexer=0;
+    flywheel = 90;
+    flywheel2 = -90;
+    flywheel = 74;
+    flywheel2 = -74;
 	}
 }
 // void flywheel_taskDrive(void* param){
@@ -207,7 +214,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  leftAuton(); // Calls selected auton from autonomous selector.
+  rightAuton(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -235,10 +242,10 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
+    flywheel = 74;
+    flywheel2 = 74;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
-    autoFlywheelDrive(390);
-    controller.print(1, 1, "speed %f", flywheel.get_actual_velocity());
     
     chassis.tank(); // Tank control
 
