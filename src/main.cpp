@@ -207,7 +207,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  rightAuton(); // Calls selected auton from autonomous selector.
+  leftAuton(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -263,8 +263,7 @@ void opcontrol() {
 			r1Engaged = false;
 		}
     if (buttonB) {
-      expansion.set_value(true);
-      expansion1.set_value(true);
+      expansion.set_value(false);
     }
 
 

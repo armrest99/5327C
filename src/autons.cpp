@@ -232,7 +232,7 @@ void leftAuton() {
   indexer.move_relative(600,600);
   pros::delay(1250);
   indexer.move_relative(600, 600);
-  pros::delay(800);
+  pros::delay(700);
   indexer.move_relative(600,600);
 
   // //Low goal discs
@@ -293,7 +293,7 @@ void left_awp(){
   indexer.move_relative(600,600);
   pros::delay(1250);
   indexer.move_relative(600, 600);
-  pros::delay(800);
+  pros::delay(700);
   indexer.move_relative(600,600);
 
 
