@@ -16,6 +16,7 @@ extern float currentX;
 extern float currentY;
 extern float pastFwd;
 extern float pastLeftRight;
+extern bool isAuton;
 
 extern void reset();
 extern void driveStop();

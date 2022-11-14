@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/misc.h"
 #include "roboto/roboto.hpp"
 
 
@@ -69,6 +70,9 @@ bool oneSpeed = true;
 double tbh = 160.0;
 double prev_error = 0.0;
 double flyDrive = 0.0;
+bool isAuton = true;
+
+
 ///
 // Drive Example
 ///
@@ -78,7 +82,6 @@ void runFlywheel(double velocity) {
 }
 
 void autoFlywheel(double velocity) {
-  while(true){
     //double velocity = *velo;
     //runFlywheel(velocity);
     double change = .25;
@@ -93,15 +96,32 @@ void autoFlywheel(double velocity) {
     runFlywheel(output);
     flyDrive = output;
     prev_error = error;
+}
+
+void flywheel_task(void* param){
+  double *v = (double*) param;
+
+
+  
+  //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
+  while(isAuton){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
+    //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
+    if (oneSpeed){
+      autoFlywheel(480);
+    }
+    else{
+      autoFlywheel(440);
+    }
+    //autoFlywheel(v);
+    
     pros::delay(ez::util::DELAY_TIME);
   }
 }
-
 ///
 // Combining Turn + Drive
 ///
 void test(){
-  autoFlywheel(470);
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
   pros::delay(5000);
   indexer = 127;
  
@@ -129,7 +149,8 @@ void flyPID(float voltage) {
 }
 void rightAuton() {
   //roller
-  autoFlywheel(470);
+  isAuton = true;
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
   intake = -127;
   chassis.set_drive_pid(20, DRIVE_SPEED);
   chassis.wait_drive();
@@ -153,7 +174,7 @@ void rightAuton() {
   pros::delay(200);
 
   // triple disc
-  chassis.set_turn_pid(220, TURN_SPEED);
+  chassis.set_turn_pid(215, TURN_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(22, DRIVE_SPEED);
   chassis.wait_drive();
@@ -177,6 +198,7 @@ void rightAuton() {
 
 void leftAuton() {
      //roller
+  isAuton = true;
   autoFlywheel(470);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
@@ -238,12 +260,13 @@ void leftAuton() {
 
 void left_awp(){
     //roller
+  isAuton = true;
   autoFlywheel(470);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
   
 
-  pros::delay(300);
+  pros::delay(500);
   //Fire Preloads
   chassis.set_drive_pid(-13, DRIVE_SPEED, true);
   chassis.wait_drive();

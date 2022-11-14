@@ -164,19 +164,22 @@ void toggleIntake() {
 
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer = 127;
+		indexer = 110;
     pros::delay(200);
     indexer = 0;
-    flywheel = 127;
-    flywheel2 = -127;
-    pros::delay(100);
-    indexer = 127;
-    pros::delay(450);
+    flywheel = 100;
+    flywheel2 = 100;
+    pros::delay(200);
+    indexer = 110;
+    pros::delay(200);
     indexer=0;
-    flywheel = 90;
-    flywheel2 = -90;
+    pros::delay(100);
+    indexer = 110;
+    pros::delay(200);
+    indexer = 0;
     flywheel = 74;
-    flywheel2 = -74;
+    flywheel2 = 74;
+
 	}
 }
 // void flywheel_taskDrive(void* param){
@@ -242,6 +245,7 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
+    isAuton = false;
     flywheel = 74;
     flywheel2 = 74;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
@@ -270,7 +274,7 @@ void opcontrol() {
 			r1Engaged = false;
 		}
     if (buttonB) {
-      expansion.set_value(false);
+      expansion.set_value(true);
     }
 
 
