@@ -1,6 +1,7 @@
 #include "main.h"
 #include "pros/misc.h"
 #include "roboto/roboto.hpp"
+#include "roboto/debug.hpp"
 
 
 /////
@@ -15,7 +16,8 @@ const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We d
                              // faster and one side slower, giving better heading correction.
 const int TURN_SPEED  = 90;
 const int SWING_SPEED = 90;
-
+double motorRPM1 = flywheel.get_actual_velocity();
+double motorRPM2 = flywheel2.get_actual_velocity();
 
 ///
 // Constants
@@ -67,7 +69,7 @@ void two_mogo_constants() {
 // }
 
 bool oneSpeed = true;
-double tbh = 160.0;
+double tbh = 40.0;
 double prev_error = 0.0;
 double flyDrive = 0.0;
 bool isAuton = true;
@@ -96,6 +98,7 @@ void autoFlywheel(double velocity) {
     runFlywheel(output);
     flyDrive = output;
     prev_error = error;
+ 
 }
 
 void flywheel_task(void* param){
@@ -113,7 +116,6 @@ void flywheel_task(void* param){
       autoFlywheel(440);
     }
     //autoFlywheel(v);
-    
     pros::delay(ez::util::DELAY_TIME);
   }
 }
@@ -121,10 +123,9 @@ void flywheel_task(void* param){
 // Combining Turn + Drive
 ///
 void test(){
+  isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
-  pros::delay(5000);
-  indexer = 127;
- 
+  
   //flywheel = 0;
 }
 
@@ -199,7 +200,7 @@ void rightAuton() {
 void leftAuton() {
      //roller
   isAuton = true;
-  autoFlywheel(470);
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
   
@@ -261,7 +262,7 @@ void leftAuton() {
 void left_awp(){
     //roller
   isAuton = true;
-  autoFlywheel(470);
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   intake = -127;
   

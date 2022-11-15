@@ -1,7 +1,7 @@
 #include "main.h"
 #include "autons.hpp"
 #include "roboto/roboto.hpp"
-
+#include "roboto/debug.hpp"
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
 // https://ez-robotics.github.io/EZ-Template/
@@ -62,8 +62,6 @@ int angleOffset;
 double tbhDrive = 0.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
-
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -72,7 +70,17 @@ double flyDriveD = 0.0;
  */
 void initialize() {
   // Print our branding over your terminal :D
-  ez::print_ez_template();
+  lv_obj_t *chart = lv_chart_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(chart, 500, 200);
+  lv_obj_align(chart, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
+  
+
+  lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
+  lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
+
+  lv_chart_set_range(chart, 0, 650);
+  // ez::print_ez_template();
 
   pros::delay(500); // Stop the user from doing anything while legacy ports configure.
 
@@ -141,6 +149,12 @@ void competition_initialize() {
 //     flyDriveD = output;
 //     prev_errorDrive = error;
 // }
+void update(void *args) {
+  flywheelGraphData *argsStruct = (flywheelGraphData *)args;
+  while (true) {
+    
+  }
+}
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
@@ -211,13 +225,12 @@ void toggleIndexer() {
  * from where it left off.
  */
 void autonomous() {
-  pros::lcd::initialize();
   chassis.reset_pid_targets(); // Resets PID targets to 0
   chassis.reset_gyro(); // Reset gyro position to 0
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  rightAuton(); // Calls selected auton from autonomous selector.
+  test(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -242,9 +255,12 @@ void opcontrol() {
   // if (tbhToggle){
   //   pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
   // }
+  // flywheelGraphData *argsStruct = (flywheelGraphData *)args;
   bool l2;
   bool buttonB;
   while (true) {
+    
+    // pros::delay(100);
     isAuton = false;
     flywheel = 74;
     flywheel2 = 74;
