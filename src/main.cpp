@@ -178,17 +178,17 @@ void toggleIntake() {
 
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer = 110;
+		indexer = 127;
     pros::delay(200);
     indexer = 0;
     flywheel = 100;
     flywheel2 = 100;
     pros::delay(200);
-    indexer = 110;
+    indexer = 127;
     pros::delay(200);
     indexer=0;
     pros::delay(100);
-    indexer = 110;
+    indexer = 127;
     pros::delay(200);
     indexer = 0;
     flywheel = 74;
