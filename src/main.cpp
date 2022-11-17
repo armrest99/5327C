@@ -1,7 +1,6 @@
 #include "main.h"
 #include "autons.hpp"
 #include "roboto/roboto.hpp"
-#include "roboto/debug.hpp"
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
 // https://ez-robotics.github.io/EZ-Template/
@@ -59,27 +58,30 @@ bool l2Engaged = false;
 bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
-double tbhDrive = 0.0;
+double tbhDrive = 180.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
+int weeds;
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+lv_obj_t *chart = lv_chart_create(lv_scr_act(), nullptr);
+lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
+lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
 void initialize() {
   // Print our branding over your terminal :D
-  lv_obj_t *chart = lv_chart_create(lv_scr_act(), nullptr);
   lv_obj_set_size(chart, 500, 200);
   lv_obj_align(chart, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
+
   
+  // lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
 
-  lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
-  lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
-
-  lv_chart_set_range(chart, 0, 650);
+  lv_chart_set_range(chart, 350, 450);
+  lv_chart_set_point_count(chart, 1000);
   // ez::print_ez_template();
 
   pros::delay(500); // Stop the user from doing anything while legacy ports configure.
@@ -129,32 +131,30 @@ void disabled() {
 void competition_initialize() {
   initialize();
 }
-// void runFlywheelDrive(double velocity) {
-//   flywheel.move_voltage(velocity);
-//   flywheel2.move_voltage(velocity);
-// }
-// void autoFlywheelDrive(double velocity) {
-//     //double velocity = *velo;
-//     //runFlywheel(velocity);
-//     double change = .25;
-//     double currentVelo = flywheel.get_actual_velocity(); 
-//     double error = velocity - currentVelo; 
-//     double output = flyDriveD + change * error;
-//     if (error * prev_errorDrive < 0) {
-//         output = 0.5 * (output + tbhDrive);
-//         tbhDrive = output;
-//     }
-//     controller.print(1, 1, "flywheelspeed %f", currentVelo);
-//     runFlywheelDrive(output);
-//     flyDriveD = output;
-//     prev_errorDrive = error;
-// }
-void update(void *args) {
-  flywheelGraphData *argsStruct = (flywheelGraphData *)args;
-  while (true) {
-    
-  }
+void runFlywheelDrive(double velocity) {
+  flywheel.move_voltage(velocity);
+  flywheel2.move_voltage(velocity);
 }
+void autoFlywheelDrive(double velocity) {
+    //double velocity = *velo;
+    //runFlywheel(velocity);
+    
+    double change = .35;
+    double currentVelo = flywheel.get_actual_velocity(); 
+    double error = velocity - currentVelo; 
+    double output = flyDriveD + change * error;
+    if (error * prev_errorDrive < 0) {
+        output = 0.5 * (output + tbhDrive);
+        tbhDrive = output;
+    }
+    lv_chart_set_next(chart, series1, flywheel.get_actual_velocity());
+    lv_chart_set_next(chart, series2, output);
+    controller.print(1, 1, "flywheelspeed %f", currentVelo);
+    runFlywheelDrive(output);
+    flyDriveD = output;
+    prev_errorDrive = error;
+}
+
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
@@ -175,26 +175,46 @@ void toggleIntake() {
 		intake = 0;
 	}
 }
-
+void toggleSpeed() {
+	if(flySpeed == 0){
+		flySpeed = 1;
+		weeds = 430;
+	}
+	else if(flySpeed == 1 && goingDown == false){
+		flySpeed = 2;
+    goingDown = true;
+		weeds = 480;
+	}
+	else if(flySpeed == 2){
+		flySpeed = 0;
+		goingDown = false;
+		weeds = 0;
+	}
+}
 void toggleIndexer() {
 	if(indexSpeed == 0){
-		indexer = 127;
-    pros::delay(200);
+		indexer.move_velocity(125);
+    pros::delay(600);
     indexer = 0;
-    flywheel = 100;
-    flywheel2 = 100;
-    pros::delay(200);
-    indexer = 127;
-    pros::delay(200);
-    indexer=0;
     pros::delay(100);
-    indexer = 127;
-    pros::delay(200);
+    indexer.move_velocity(125);
+    pros::delay(300);
     indexer = 0;
-    flywheel = 74;
-    flywheel2 = 74;
 
 	}
+}
+void toggleIndexerFar() {
+		indexer.move_velocity(125);
+    pros::delay(300);
+    indexer = 0;
+    pros::delay(1300);
+    indexer.move_velocity(125);
+    pros::delay(300);
+    indexer = 0;
+    pros::delay(1300);
+    indexer.move_velocity(125);
+    pros::delay(300);
+    indexer = 0;
 }
 // void flywheel_taskDrive(void* param){
 //   double *v = (double*) param;
@@ -230,7 +250,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  test(); // Calls selected auton from autonomous selector.
+  leftAuton(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -259,11 +279,9 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
-    
+    autoFlywheelDrive(weeds);
     // pros::delay(100);
     isAuton = false;
-    flywheel = 74;
-    flywheel2 = 74;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     
@@ -278,9 +296,13 @@ void opcontrol() {
 			l1Engaged = false;
 		}
 
-    if(l2){
-      intake = -35;
-    }
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && l2Engaged == false){
+			toggleSpeed();
+			l2Engaged = true;
+		}
+    else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+			l2Engaged = false;
+		}
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false){
 			toggleIndexer();
@@ -288,6 +310,13 @@ void opcontrol() {
 		}
     else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
 			r1Engaged = false;
+		}
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged == false){
+			toggleIndexerFar();
+			aEngaged = true;
+		}
+    else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+			aEngaged = false;
 		}
     if (buttonB) {
       expansion.set_value(true);

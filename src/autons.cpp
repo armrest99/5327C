@@ -1,7 +1,6 @@
 #include "main.h"
 #include "pros/misc.h"
 #include "roboto/roboto.hpp"
-#include "roboto/debug.hpp"
 
 
 /////
@@ -16,8 +15,7 @@ const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We d
                              // faster and one side slower, giving better heading correction.
 const int TURN_SPEED  = 90;
 const int SWING_SPEED = 90;
-double motorRPM1 = flywheel.get_actual_velocity();
-double motorRPM2 = flywheel2.get_actual_velocity();
+
 
 ///
 // Constants
@@ -98,7 +96,6 @@ void autoFlywheel(double velocity) {
     runFlywheel(output);
     flyDrive = output;
     prev_error = error;
- 
 }
 
 void flywheel_task(void* param){
