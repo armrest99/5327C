@@ -66,12 +66,11 @@ void two_mogo_constants() {
 //   chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
 // }
 
-bool oneSpeed = true;
-double tbh = 40.0;
+bool oneSpeed = false;
+double tbh = 235.0;
 double prev_error = 0.0;
-double flyDrive = 0.0;
+double output;
 bool isAuton = true;
-
 
 ///
 // Drive Example
@@ -84,17 +83,16 @@ void runFlywheel(double velocity) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = .25;
+    double change = .3;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
-    double output = flyDrive + change * error;
+    output += (change * error);
     if (error * prev_error < 0) {
         output = 0.5 * (output + tbh);
         tbh = output;
     }
     controller.print(1, 1, "flywheelspeed %f", currentVelo);
     runFlywheel(output);
-    flyDrive = output;
     prev_error = error;
 }
 
@@ -107,10 +105,10 @@ void flywheel_task(void* param){
   while(isAuton){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
     if (oneSpeed){
-      autoFlywheel(480);
+      autoFlywheel(430);
     }
     else{
-      autoFlywheel(440);
+      autoFlywheel(470);
     }
     //autoFlywheel(v);
     pros::delay(ez::util::DELAY_TIME);
@@ -147,6 +145,7 @@ void flyPID(float voltage) {
 }
 void rightAuton() {
   //roller
+  oneSpeed = false;
   isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
   intake = -127;
@@ -154,55 +153,62 @@ void rightAuton() {
   chassis.wait_drive();
   chassis.set_turn_pid(90, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(4, DRIVE_SPEED);
+  chassis.set_drive_pid(4.25, DRIVE_SPEED);
   chassis.wait_drive();
   
   
   // fire preloads
-  chassis.set_drive_pid(-13, DRIVE_SPEED);
+  chassis.set_drive_pid(-5, DRIVE_SPEED);
   chassis.wait_drive();
 
-  chassis.set_turn_pid(95, TURN_SPEED);
+  chassis.set_turn_pid(98, TURN_SPEED);
   chassis.wait_drive();
 
   pros::delay(1000);
-  indexer.move_relative(600, 400);
-  pros::delay(900);
-  indexer.move_relative(600,600);
-  pros::delay(200);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
+  pros::delay(720);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
 
   // triple disc
-  chassis.set_turn_pid(215, TURN_SPEED);
+  pros::delay(500);
+  oneSpeed = true;
+  chassis.set_turn_pid(223, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(22, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(30, 50);
+  chassis.set_drive_pid(62, DRIVE_SPEED);
   chassis.wait_drive();
 
   //Fire triple stack
   chassis.set_turn_pid(130, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-2, DRIVE_SPEED);
+  chassis.set_drive_pid(5, DRIVE_SPEED);
   chassis.wait_drive();
-  pros::delay(100);
-  indexer.move_relative(600,600);
-  pros::delay(1250);
-  indexer.move_relative(600, 600);
-  pros::delay(750);
-  indexer.move_relative(600,600);
-  oneSpeed = false;
-
+  pros::delay(800);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
+  pros::delay(700);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
+  pros::delay(700);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
   }
 
 void leftAuton() {
      //roller
   isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
-  chassis.set_drive_pid(3, DRIVE_SPEED, true);
+  chassis.set_drive_pid(4, DRIVE_SPEED, true);
   intake = -127;
   
 
-  pros::delay(300);
+  pros::delay(200);
   //Fire Preloads
   chassis.set_drive_pid(-13, DRIVE_SPEED, true);
   chassis.wait_drive();
@@ -211,34 +217,43 @@ void leftAuton() {
   chassis.wait_drive();
 
   pros::delay(1000);
-  indexer.move_relative(600, 600);
-  pros::delay(1500);
-  indexer.move_relative(600,600);
-  
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
+  pros::delay(700);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
+  oneSpeed = true;
 
   pros::delay(400);
 
 
   //triple stack
-  chassis.set_turn_pid(-120, TURN_SPEED);
+  chassis.set_turn_pid(-108, TURN_SPEED);
   chassis.wait_drive();
-  oneSpeed = false;
-  chassis.set_drive_pid(22, DRIVE_SPEED);
+  chassis.set_drive_pid(18, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(30, 60);
+  chassis.set_drive_pid(22, 40);
   chassis.wait_drive();
 
   // //Fire triple stack
-  chassis.set_turn_pid(-41, TURN_SPEED);
+  chassis.set_turn_pid(-35, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-11, DRIVE_SPEED);
+  chassis.set_drive_pid(-7, DRIVE_SPEED);
   chassis.wait_drive();
-  pros::delay(100);
-  indexer.move_relative(600,600);
-  pros::delay(1250);
-  indexer.move_relative(600, 600);
+  pros::delay(1000);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
+  pros::delay(1500);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
   pros::delay(700);
-  indexer.move_relative(600,600);
+  indexer.move_velocity(125);
+  pros::delay(310);
+  indexer = 0;
 
   // //Low goal discs
   // chassis.set_drive_pid(10, DRIVE_SPEED);

@@ -58,7 +58,7 @@ bool l2Engaged = false;
 bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
-double tbhDrive = 180.0;
+double tbhDrive = 215.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
 int weeds;
@@ -194,11 +194,13 @@ void toggleSpeed() {
 void toggleIndexer() {
 	if(indexSpeed == 0){
 		indexer.move_velocity(125);
-    pros::delay(600);
+    pros::delay(310);
     indexer = 0;
+    flywheel = 100;
+    flywheel2 = 100;
     pros::delay(100);
     indexer.move_velocity(125);
-    pros::delay(300);
+    pros::delay(600);
     indexer = 0;
 
 	}
@@ -207,11 +209,11 @@ void toggleIndexerFar() {
 		indexer.move_velocity(125);
     pros::delay(300);
     indexer = 0;
-    pros::delay(1300);
+    pros::delay(1400);
     indexer.move_velocity(125);
     pros::delay(300);
     indexer = 0;
-    pros::delay(1300);
+    pros::delay(1400);
     indexer.move_velocity(125);
     pros::delay(300);
     indexer = 0;
@@ -250,7 +252,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  leftAuton(); // Calls selected auton from autonomous selector.
+  rightAuton(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -279,7 +281,8 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
-    autoFlywheelDrive(weeds);
+    flywheel = 80;
+    flywheel2 = 80;
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
