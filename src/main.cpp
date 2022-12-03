@@ -191,33 +191,33 @@ void toggleSpeed() {
 		weeds = 0;
 	}
 }
-void toggleIndexer() {
-	if(indexSpeed == 0){
-		indexer.move_velocity(125);
-    pros::delay(310);
-    indexer = 0;
-    flywheel = 100;
-    flywheel2 = 100;
-    pros::delay(100);
-    indexer.move_velocity(125);
-    pros::delay(600);
-    indexer = 0;
+// void toggleIndexer() {
+// 	if(indexSpeed == 0){
+// 		indexer.move_velocity(125);
+//     pros::delay(310);
+//     indexer = 0;
+//     flywheel = 100;
+//     flywheel2 = 100;
+//     pros::delay(100);
+//     indexer.move_velocity(125);
+//     pros::delay(600);
+//     indexer = 0;
 
-	}
-}
-void toggleIndexerFar() {
-		indexer.move_velocity(125);
-    pros::delay(300);
-    indexer = 0;
-    pros::delay(1400);
-    indexer.move_velocity(125);
-    pros::delay(300);
-    indexer = 0;
-    pros::delay(1400);
-    indexer.move_velocity(125);
-    pros::delay(300);
-    indexer = 0;
-}
+// 	}
+// }
+// void toggleIndexerFar() {
+// 		indexer.move_velocity(125);
+//     pros::delay(300);
+//     indexer = 0;
+//     pros::delay(1400);
+//     indexer.move_velocity(125);
+//     pros::delay(300);
+//     indexer = 0;
+//     pros::delay(1400);
+//     indexer.move_velocity(125);
+//     pros::delay(300);
+//     indexer = 0;
+// }
 // void flywheel_taskDrive(void* param){
 //   double *v = (double*) param;
 //   bool twoSpeed = true;
@@ -252,7 +252,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  rightAuton(); // Calls selected auton from autonomous selector.
+  leftAuton(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -308,19 +308,20 @@ void opcontrol() {
 		}
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false){
-			toggleIndexer();
+			indexer = 127;
 			r1Engaged = true;
 		}
     else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			r1Engaged = false;
+			indexer = 0;
+      r1Engaged = false;
+      
 		}
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged == false){
-			toggleIndexerFar();
-			aEngaged = true;
-		}
-    else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-			aEngaged = false;
-		}
+    // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged == false){
+		// 	aEngaged = true;
+		// }
+    // else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+		// 	aEngaged = false;
+		// }
     if (buttonB) {
       expansion.set_value(true);
     }

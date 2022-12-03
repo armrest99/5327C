@@ -67,7 +67,7 @@ void two_mogo_constants() {
 // }
 
 bool oneSpeed = false;
-double tbh = 235.0;
+double tbh = 215.0;
 double prev_error = 0.0;
 double output;
 bool isAuton = true;
@@ -83,7 +83,7 @@ void runFlywheel(double velocity) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = .3;
+    double change = 1;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     output += (change * error);
@@ -108,7 +108,7 @@ void flywheel_task(void* param){
       autoFlywheel(430);
     }
     else{
-      autoFlywheel(470);
+      autoFlywheel(440);
     }
     //autoFlywheel(v);
     pros::delay(ez::util::DELAY_TIME);
@@ -202,35 +202,35 @@ void rightAuton() {
 
 void leftAuton() {
      //roller
+  oneSpeed = true;
   isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
-  chassis.set_drive_pid(4, DRIVE_SPEED, true);
+  chassis.set_drive_pid(3, DRIVE_SPEED, true);
+  chassis.wait_drive();
   intake = -127;
   
 
-  pros::delay(200);
+  pros::delay(100);
   //Fire Preloads
-  chassis.set_drive_pid(-13, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-8, DRIVE_SPEED, true);
   chassis.wait_drive();
 
   chassis.set_turn_pid(-13, TURN_SPEED);
   chassis.wait_drive();
 
-  pros::delay(1000);
-  indexer.move_velocity(125);
-  pros::delay(310);
+  pros::delay(2500);
+  indexer = 127;
+  pros::delay(160);
   indexer = 0;
-  pros::delay(700);
-  indexer.move_velocity(125);
-  pros::delay(310);
+  pros::delay(1200);
+  indexer = 127;
+  pros::delay(160);
   indexer = 0;
-  oneSpeed = true;
 
   pros::delay(400);
 
-
   //triple stack
-  chassis.set_turn_pid(-108, TURN_SPEED);
+  chassis.set_turn_pid(-112, TURN_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(18, DRIVE_SPEED);
   chassis.wait_drive();
@@ -238,21 +238,21 @@ void leftAuton() {
   chassis.wait_drive();
 
   // //Fire triple stack
-  chassis.set_turn_pid(-35, TURN_SPEED);
+  chassis.set_turn_pid(-32, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-7, DRIVE_SPEED);
+  chassis.set_drive_pid(-15, DRIVE_SPEED);
   chassis.wait_drive();
   pros::delay(1000);
-  indexer.move_velocity(125);
-  pros::delay(310);
+  indexer = 127;
+  pros::delay(160);
   indexer = 0;
-  pros::delay(1500);
-  indexer.move_velocity(125);
-  pros::delay(310);
+  pros::delay(500);
+  indexer = 127;
+  pros::delay(160);
   indexer = 0;
-  pros::delay(700);
-  indexer.move_velocity(125);
-  pros::delay(310);
+  pros::delay(500);
+  indexer = 127;
+  pros::delay(160);
   indexer = 0;
 
   // //Low goal discs
