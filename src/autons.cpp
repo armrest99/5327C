@@ -202,7 +202,7 @@ void rightAuton() {
 
 void leftAuton() {
      //roller
-  tbh = 215.0;
+  tbh = 225.0;
   oneSpeed = true;
   isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
