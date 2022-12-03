@@ -105,7 +105,7 @@ void flywheel_task(void* param){
   while(isAuton){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
     if (oneSpeed){
-      autoFlywheel(430);
+      autoFlywheel(450);
     }
     else{
       autoFlywheel(440);
