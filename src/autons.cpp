@@ -233,9 +233,9 @@ void leftAuton() {
   //triple stack
   chassis.set_turn_pid(-112, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(18, DRIVE_SPEED);
+  chassis.set_drive_pid(15, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(22, 40);
+  chassis.set_drive_pid(25, 60);
   chassis.wait_drive();
 
   // //Fire triple stack
