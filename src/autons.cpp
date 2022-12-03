@@ -83,7 +83,7 @@ void runFlywheel(double velocity) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = 1;
+    double change = .5;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     output += (change * error);
@@ -218,7 +218,7 @@ void leftAuton() {
   chassis.set_turn_pid(-13, TURN_SPEED);
   chassis.wait_drive();
 
-  pros::delay(2500);
+  pros::delay(1500);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
