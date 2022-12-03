@@ -218,11 +218,11 @@ void leftAuton() {
   chassis.set_turn_pid(-13, TURN_SPEED);
   chassis.wait_drive();
 
-  pros::delay(1500);
+  pros::delay(1000);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
-  pros::delay(1200);
+  pros::delay(500);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
