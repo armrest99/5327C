@@ -17,7 +17,7 @@ void leftAuton();
 void rightAuton();
 void flyPID();
 void left_awp();
-
+void Skills();
 void default_constants();
 void one_mogo_constants();
 void two_mogo_constants();

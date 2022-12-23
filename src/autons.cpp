@@ -67,6 +67,7 @@ void two_mogo_constants() {
 // }
 
 bool oneSpeed = true;
+bool skillSpeed = false;
 double tbh = 215.0;
 double prev_error = 0.0;
 double output;
@@ -106,6 +107,9 @@ void flywheel_task(void* param){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
     if (oneSpeed){
       autoFlywheel(425);
+    }
+    else if (skillSpeed){
+      autoFlywheel(390);
     }
     else{
       autoFlywheel(450);
@@ -306,9 +310,9 @@ void left_awp(){
   //triple stack
   chassis.set_turn_pid(-112, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(20, DRIVE_SPEED);
+  chassis.set_drive_pid(18, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(20, 80);
+  chassis.set_drive_pid(22, 60);
   chassis.wait_drive();
 
   // //Fire triple stack
@@ -347,6 +351,47 @@ void left_awp(){
   intake = 0;
 }
 
+void Skills(){
+  oneSpeed = false;
+  skillSpeed = true;
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  chassis.set_drive_pid(3, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  intake = -127;
+  
+
+  pros::delay(300);
+  //Fire Preloads
+  chassis.set_drive_pid(-8, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(115, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(30, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  pros::delay(250);
+  chassis.set_drive_pid(-6, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(0, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-53, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  indexer = 80;
+  pros::delay(950);
+  indexer = 0;
+  chassis.set_drive_pid(40, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-130, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(45, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-45, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-3, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  indexer = 80;
+  pros::delay(950);
+  indexer = 0;
+}
 
 
 

@@ -139,7 +139,7 @@ void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
     
-    double change = .35;
+    double change = .7;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDriveD + change * error;
@@ -252,7 +252,7 @@ void autonomous() {
   chassis.reset_drive_sensor(); // Reset drive sensors to 0
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  left_awp(); // Calls selected auton from autonomous selector.
+  Skills(); // Calls selected auton from autonomous selector.
 }
 
 
@@ -281,8 +281,7 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
-    flywheel = 80;
-    flywheel2 = 80;
+    autoFlywheelDrive(390);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
