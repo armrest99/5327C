@@ -352,6 +352,7 @@ void left_awp(){
 }
 
 void Skills(){
+  tbh = 195.0;
   oneSpeed = false;
   skillSpeed = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
