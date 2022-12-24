@@ -9,7 +9,7 @@
 /////
 
 
-const int DRIVE_SPEED = 127; // This is 110/127 (around 87% of max speed).  We don't suggest making this 127.
+const int DRIVE_SPEED = 110; // This is 110/127 (around 87% of max speed).  We don't suggest making this 127.
                              // If this is 127 and the robot tries to heading correct, it's only correcting by
                              // making one side slower.  When this is 87%, it's correcting by making one side
                              // faster and one side slower, giving better heading correction.
@@ -84,7 +84,7 @@ void runFlywheel(double velocity) {
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = .5;
+    double change = .3;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     output += (change * error);
@@ -370,27 +370,60 @@ void Skills(){
   chassis.set_drive_pid(30, DRIVE_SPEED, true);
   chassis.wait_drive();
   pros::delay(250);
-  chassis.set_drive_pid(-6, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-5, DRIVE_SPEED, true);
   chassis.wait_drive();
   chassis.set_turn_pid(0, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-53, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-51, DRIVE_SPEED, true);
   chassis.wait_drive();
-  indexer = 80;
-  pros::delay(950);
+  indexer = 75;
+  pros::delay(1050);
   indexer = 0;
-  chassis.set_drive_pid(40, DRIVE_SPEED, true);
+  //intake and shoot low goal
+  // chassis.set_turn_pid(-90, TURN_SPEED);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(25, 90, true);
+  // chassis.wait_drive();
+  // chassis.set_drive_pid(-25, DRIVE_SPEED, true);
+  // chassis.wait_drive();
+  // chassis.set_turn_pid(0, TURN_SPEED);
+  // chassis.wait_drive();
+  // indexer = 80;
+  // pros::delay(1050);
+  // indexer = 0;
+  //intake and shoot 3 disc in line
+  chassis.set_drive_pid(38, DRIVE_SPEED, true);
   chassis.wait_drive();
   chassis.set_turn_pid(-130, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(45, DRIVE_SPEED, true);
+  chassis.set_drive_pid(55, DRIVE_SPEED, true);
   chassis.wait_drive();
   chassis.set_turn_pid(-45, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-3, DRIVE_SPEED, true);
+  chassis.set_drive_pid(2, DRIVE_SPEED, true);
   chassis.wait_drive();
-  indexer = 80;
-  pros::delay(950);
+  indexer = 75;
+  pros::delay(350);
+  indexer = 0;
+  chassis.set_drive_pid(-5, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  indexer = 75;
+  pros::delay(700);
+  indexer = 0;
+
+  //intake and shoot 3 stack
+  chassis.set_turn_pid(-130, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(25, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  chassis.set_drive_pid(40, 60, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-90, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-45, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  indexer = 75;
+  pros::delay(1050);
   indexer = 0;
 }
 

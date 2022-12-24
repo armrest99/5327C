@@ -139,7 +139,7 @@ void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
     
-    double change = .7;
+    double change = .3;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDriveD + change * error;
