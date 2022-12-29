@@ -16,6 +16,7 @@ pros::Motor indexer(10, pros::E_MOTOR_GEARSET_18, 1,
 pros::Motor intake(12, pros::E_MOTOR_GEARSET_06, 0,
                    pros::E_MOTOR_ENCODER_COUNTS);
 pros::ADIDigitalOut expansion('H', false);
+pros::ADIDigitalOut intakeLift('G', true);
 pros::ADIAnalogIn sensor ('D');
 
 

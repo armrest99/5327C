@@ -273,7 +273,7 @@ void autonomous() {
  */
 void opcontrol() {
   // This is preference to what you like to drive on.
-  chassis.set_drive_brake(MOTOR_BRAKE_COAST);
+  chassis.set_drive_brake(MOTOR_BRAKE_HOLD);
   // if (tbhToggle){
   //   pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
   // }
@@ -323,6 +323,9 @@ void opcontrol() {
 		// }
     if (buttonB) {
       expansion.set_value(true);
+    }
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+      intakeLift.set_value(false);
     }
 
 
