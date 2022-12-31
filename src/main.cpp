@@ -58,7 +58,7 @@ bool l2Engaged = false;
 bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
-double tbhDrive = 215.0;
+double tbhDrive = 190.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
 int weeds;
@@ -281,7 +281,7 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
-    autoFlywheelDrive(390);
+    autoFlywheelDrive(380);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
