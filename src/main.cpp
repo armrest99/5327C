@@ -273,7 +273,7 @@ void autonomous() {
  */
 void opcontrol() {
   // This is preference to what you like to drive on.
-  chassis.set_drive_brake(MOTOR_BRAKE_HOLD);
+  chassis.set_drive_brake(MOTOR_BRAKE_COAST);
   // if (tbhToggle){
   //   pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
   // }
@@ -281,7 +281,7 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
-    autoFlywheelDrive(380);
+    autoFlywheelDrive(390);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
@@ -307,7 +307,7 @@ void opcontrol() {
 		}
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false){
-			indexer = 127;
+			indexer = 90;
 			r1Engaged = true;
 		}
     else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){

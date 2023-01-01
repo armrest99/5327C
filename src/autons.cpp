@@ -106,10 +106,10 @@ void flywheel_task(void* param){
   while(isAuton){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
     if (oneSpeed){
-      autoFlywheel(410);
+      autoFlywheel(425);
     }
     else if (skillSpeed){
-      autoFlywheel(380);
+      autoFlywheel(385);
     }
     else{
       autoFlywheel(375);
@@ -353,7 +353,7 @@ void left_awp(){
 
 void Skills(){
   intakeLift.set_value(false);
-  tbh = 190.0;
+  tbh = 192.5;
   oneSpeed = false;
   skillSpeed = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
@@ -432,7 +432,7 @@ void Skills(){
   chassis.set_turn_pid(-178, TURN_SPEED);
   chassis.wait_drive();
   
-  chassis.set_drive_pid(9, DRIVE_SPEED);
+  chassis.set_drive_pid(8, DRIVE_SPEED);
   chassis.wait_drive();
   pros::delay(200);
   chassis.set_swing_pid(ez::RIGHT_SWING, -87, TURN_SPEED);
@@ -458,7 +458,7 @@ void Skills(){
   chassis.set_drive_pid(20.5, DRIVE_SPEED, true);
   chassis.wait_drive();
   pros::delay(200);
-  chassis.set_swing_pid(ez::LEFT_SWING, -176, TURN_SPEED);
+  chassis.set_swing_pid(ez::LEFT_SWING, -177, TURN_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(-36, DRIVE_SPEED, true);
   chassis.wait_drive();
@@ -489,56 +489,56 @@ void Skills(){
   indexer = 75;
   pros::delay(400);
   indexer = 0;
-  skillSpeed = false;
 
   //2nd to last 3 stack
-  chassis.set_turn_pid(-310, TURN_SPEED);
+  chassis.set_turn_pid(-308, TURN_SPEED);
   chassis.wait_drive();
   intakeLift.set_value(true);
   chassis.set_drive_pid(25, DRIVE_SPEED, true);
   chassis.wait_drive();
   intakeLift.set_value(false);
   pros::delay(300);
-  chassis.set_drive_pid(32, DRIVE_SPEED, true);
+  chassis.set_drive_pid(37, DRIVE_SPEED, true);
   chassis.wait_drive();
   chassis.set_swing_pid(ez::RIGHT_SWING, -264, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-29, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-37, DRIVE_SPEED, true);
   chassis.wait_drive();
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
 
   //last 3 stack
-  chassis.set_swing_pid(ez::LEFT_SWING, -245, TURN_SPEED);
+  chassis.set_swing_pid(ez::LEFT_SWING, -243, TURN_SPEED);
   chassis.wait_drive();
   intakeLift.set_value(true);
-  chassis.set_drive_pid(36, DRIVE_SPEED, true);
+  chassis.set_drive_pid(34, DRIVE_SPEED, true);
   chassis.wait_drive();
   intakeLift.set_value(false);
-  pros::delay(600);
-  chassis.set_drive_pid(-35, DRIVE_SPEED, true);
+  pros::delay(800);
+  chassis.set_drive_pid(-34, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_swing_pid(ez::LEFT_SWING, -264, TURN_SPEED);
+  chassis.set_swing_pid(ez::LEFT_SWING, -265, TURN_SPEED);
   chassis.wait_drive();
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
 
   //last disc
-  oneSpeed = true;
   chassis.set_swing_pid(ez::LEFT_SWING, -230, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(50, DRIVE_SPEED, true);
+  skillSpeed = false;
+  oneSpeed = true;
+  chassis.set_drive_pid(47, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_swing_pid(ez::LEFT_SWING, -253, TURN_SPEED);
+  chassis.set_swing_pid(ez::LEFT_SWING, -250, TURN_SPEED);
   chassis.wait_drive();
   indexer = 127;
-  pros::delay(200);
+  pros::delay(400);
   indexer = 0;
-  chassis.set_swing_pid(ez::RIGHT_SWING, -125, TURN_SPEED);
+  chassis.set_swing_pid(ez::RIGHT_SWING, -127, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-30, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-35, DRIVE_SPEED, true);
   chassis.wait_drive();
   expansion.set_value(true);
 }
