@@ -158,7 +158,7 @@ void autoFlywheelDrive(double velocity) {
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
-		intake = -127;
+		intake.move_velocity(-370);
 	}
 	else if(inSpeed == 1 && goingDown == false){
 		inSpeed = 2;
@@ -167,7 +167,7 @@ void toggleIntake() {
 	else if(inSpeed == 2){
 		inSpeed = 1;
 		goingDown = true;
-		intake = 127;
+		intake.move_velocity(600);
 	}
 	else if(inSpeed == 1 && goingDown == true){
 		inSpeed = 0;
