@@ -17,6 +17,7 @@ extern float currentY;
 extern float pastFwd;
 extern float pastLeftRight;
 extern bool isAuton;
+extern pros::Optical optical_sensor; 
 
 extern void reset();
 extern void driveStop();

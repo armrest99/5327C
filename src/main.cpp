@@ -11,7 +11,7 @@
 Drive chassis (
   // Left Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
-  {-8, -14}
+  {-8, -18}
   // Right Chassis Ports (negative port will reverse it!)
   //   the first port is the sensored port (when trackers are not used!)
   ,{9, 6}
@@ -191,6 +191,7 @@ void toggleSpeed() {
 		weeds = 0;
 	}
 }
+
 // void toggleIndexer() {
 // 	if(indexSpeed == 0){
 // 		indexer.move_velocity(125);
@@ -281,6 +282,8 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
+    printf("Hue value: %lf \n", optical_sensor.get_hue());
+    optical_sensor.set_led_pwm(100);
     autoFlywheelDrive(390);
     // pros::delay(100);
     isAuton = false;
@@ -288,6 +291,12 @@ void opcontrol() {
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     
     chassis.tank(); // Tank control
+    if(optical_sensor.get_hue() < 50){
+      intake.move_velocity(-520);
+    }
+    else {
+      intake = 0;
+    }
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && l1Engaged == false){
 			toggleIntake();

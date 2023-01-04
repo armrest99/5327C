@@ -9,7 +9,7 @@ const float PI = 3.1415926;
 
 pros::Motor flywheel(11, pros::E_MOTOR_GEARSET_06, 0,
                      pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor flywheel2(1, pros::E_MOTOR_GEARSET_06, 1,
+pros::Motor flywheel2(17, pros::E_MOTOR_GEARSET_06, 1,
                      pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor indexer(10, pros::E_MOTOR_GEARSET_18, 1,
                      pros::E_MOTOR_ENCODER_COUNTS);
@@ -18,6 +18,7 @@ pros::Motor intake(12, pros::E_MOTOR_GEARSET_06, 0,
 pros::ADIDigitalOut expansion('H', false);
 pros::ADIDigitalOut intakeLift('G', true);
 pros::ADIAnalogIn sensor ('D');
+pros::Optical optical_sensor(14);
 
 
 
