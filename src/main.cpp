@@ -88,7 +88,7 @@ void initialize() {
 
   // Configure your chassis controls
   chassis.toggle_modify_curve_with_controller(true); // Enables modifying the controller curve with buttons on the joysticks
-  chassis.set_active_brake(0.1); // Sets the active brake kP. We recommend 0.1.
+  // chassis.set_active_brake(0.1); // Sets the active brake kP. We recommend 0.1.
   chassis.set_curve_default(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
   void default_constants(); // Set the drive to your own constants from autons.cpp!
   void exit_condition_defaults(); // Set the exit conditions to your own constants from autons.cpp!
@@ -139,7 +139,7 @@ void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
     
-    double change = .3;
+    double change = .25;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDriveD + change * error;
@@ -274,10 +274,10 @@ void autonomous() {
  */
 void opcontrol() {
   // This is preference to what you like to drive on.
-  chassis.set_drive_brake(MOTOR_BRAKE_COAST);
   // if (tbhToggle){
   //   pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
   // }
+  chassis.set_drive_brake(MOTOR_BRAKE_COAST);
   // flywheelGraphData *argsStruct = (flywheelGraphData *)args;
   bool l2;
   bool buttonB;
