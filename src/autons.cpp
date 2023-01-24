@@ -24,35 +24,35 @@ const int SWING_SPEED = 90;
 // It's best practice to tune constants when the robot is empty and with heavier game objects, or with lifts up vs down.
 // If the objects are light or the cog doesn't change much, then there isn't a concern here.
 
-void default_constants() {
-  chassis.set_slew_min_power(80, 80);
-  chassis.set_slew_distance(7, 7);
-  chassis.set_pid_constants(&chassis.headingPID, 11, 0, 20, 0);
-  chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0, 5, 0);
-  chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
-  chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
-  chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
-}
+// void default_constants() {
+//   chassis.set_slew_min_power(80, 80);
+//   chassis.set_slew_distance(7, 7);
+//   chassis.set_pid_constants(&chassis.headingPID, 11, 0, 20, 0);
+//   chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0, 5, 0);
+//   chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
+//   chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
+//   chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
+// }
 
-void one_mogo_constants() {
-  chassis.set_slew_min_power(80, 80);
-  chassis.set_slew_distance(7, 7);
-  chassis.set_pid_constants(&chassis.headingPID, 11, 0, 20, 0);
-  chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0, 5, 0);
-  chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
-  chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
-  chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
-}
+// void one_mogo_constants() {
+//   chassis.set_slew_min_power(80, 80);
+//   chassis.set_slew_distance(7, 7);
+//   chassis.set_pid_constants(&chassis.headingPID, 11, 0, 20, 0);
+//   chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0, 5, 0);
+//   chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
+//   chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
+//   chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
+// }
 
-void two_mogo_constants() {
-  chassis.set_slew_min_power(80, 80);
-  chassis.set_slew_distance(7, 7);
-  chassis.set_pid_constants(&chassis.headingPID, 11, 0, 20, 0);
-  chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0, 5, 0);
-  chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
-  chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
-  chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
-}
+// void two_mogo_constants() {
+//   chassis.set_slew_min_power(80, 80);
+//   chassis.set_slew_distance(7, 7);
+//   chassis.set_pid_constants(&chassis.headingPID, 11, 0, 20, 0);
+//   chassis.set_pid_constants(&chassis.forward_drivePID, 0.45, 0, 5, 0);
+//   chassis.set_pid_constants(&chassis.backward_drivePID, 0.45, 0, 5, 0);
+//   chassis.set_pid_constants(&chassis.turnPID, 5, 0.003, 35, 15);
+//   chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
+// }
 
 // void exit_condition_defaults() {
 //   chassis.set_exit_condition(chassis.turn_exit, 100, 3, 500, 7, 500, 500);
@@ -72,19 +72,18 @@ double tbh = 215.0;
 double prev_error = 0.0;
 double output;
 bool isAuton = true;
-
+bool skillsBool = false;
 ///
 // Drive Example
 ///
 void runFlywheel(double velocity) {
   flywheel.move_voltage(velocity);
-  flywheel2.move_voltage(velocity);
 }
 
 void autoFlywheel(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
-    double change = .25;
+    double change = .3;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     output += (change * error);
@@ -102,22 +101,25 @@ void flywheel_task(void* param){
   //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)));
   while(isAuton){//pros::Task::notify_take(true, TIMEOUT_MAX)==1){//pros::Task::notify_take(true, TIMEOUT_MAX)){
     //pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false, TIMEOUT_MAX)))
-    optical_sensor.set_led_pwm(100);
-    if (optical_sensor.get_hue() > 210){
-      intake.move_velocity(0);
-    }
-    else {
-      intake.move_velocity(-480);
-    }
     if (oneSpeed){
-      autoFlywheel(425);
+      autoFlywheel(470);
     }
     else if (skillSpeed){
       autoFlywheel(380);
     }
     else{
-      autoFlywheel(375);
+      autoFlywheel(435);
     }
+    // if (skillsBool){
+    //   optical_sensor.set_led_pwm(100);
+    //   if (optical_sensor.get_hue() > 210){
+    //   intake.move_velocity(0);
+    //   }
+    //   else {
+    //   intake.move_velocity(-420);
+    //   }
+    // }
+    
     //autoFlywheel(v);
     pros::delay(ez::util::DELAY_TIME);
   }
@@ -153,7 +155,9 @@ void flyPID(float voltage) {
 }
 void rightAuton() {
   //roller
-  oneSpeed = false;
+  skillsBool = false;
+  tbh = 235.0;
+  oneSpeed = true;
   isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
   intake = -127;
@@ -208,15 +212,17 @@ void rightAuton() {
   indexer = 0;
   }
 
-void leftAuton() {
+  void leftAuton() {
      //roller
-  tbh = 212.5;
+  tbh = 235.0;
   oneSpeed = true;
   isAuton = true;
+
   pros::Task fly = pros::Task(flywheel_task, (void*)1);
+  intake = -127;
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   chassis.wait_drive();
-  intake = -127;
+  
   
 
   pros::delay(100);
@@ -224,46 +230,48 @@ void leftAuton() {
   chassis.set_drive_pid(-8, DRIVE_SPEED, true);
   chassis.wait_drive();
 
-  chassis.set_turn_pid(-15, TURN_SPEED);
+  chassis.set_turn_pid(-22, TURN_SPEED);
   chassis.wait_drive();
-
+  shotBlocker.set_value(false);
   pros::delay(700);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
-  pros::delay(500);
+  pros::delay(800);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
-
+  shotBlocker.set_value(true);
   pros::delay(400);
   oneSpeed = false;
 
   //triple stack
-  chassis.set_turn_pid(-112, TURN_SPEED);
+  chassis.set_turn_pid(-120, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(20, DRIVE_SPEED);
+  intakeLift.set_value(true);
+  chassis.set_drive_pid(18, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(20, 80);
-  chassis.wait_drive();
+  intakeLift.set_value(false);
+  pros::delay(900);
 
   // //Fire triple stack
-  chassis.set_turn_pid(-32, TURN_SPEED);
+  chassis.set_turn_pid(-23, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-13, DRIVE_SPEED);
+  chassis.set_drive_pid(-8, DRIVE_SPEED);
   chassis.wait_drive();
+  shotBlocker.set_value(false);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
-  pros::delay(500);
+  pros::delay(700);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
-  pros::delay(500);
+  pros::delay(700);
   indexer = 127;
   pros::delay(160);
   indexer = 0;
-
+  shotBlocker.set_value(true);
   // //Low goal discs
   // chassis.set_drive_pid(10, DRIVE_SPEED);
   // chassis.wait_drive();
@@ -279,90 +287,12 @@ void leftAuton() {
   // fly.notify();
 }
 
-
-void left_awp(){
-    //roller
-  tbh = 212.5;
-  oneSpeed = true;
-  isAuton = true;
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
-  chassis.set_drive_pid(3, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  intake = -127;
-  
-
-  pros::delay(100);
-  //Fire Preloads
-  chassis.set_drive_pid(-8, DRIVE_SPEED, true);
-  chassis.wait_drive();
-
-  chassis.set_turn_pid(-15, TURN_SPEED);
-  chassis.wait_drive();
-
-  pros::delay(700);
-  indexer = 127;
-  pros::delay(160);
-  indexer = 0;
-  pros::delay(500);
-  indexer = 127;
-  pros::delay(160);
-  indexer = 0;
-
-  pros::delay(400);
-  oneSpeed = false;
-
-  //triple stack
-  chassis.set_turn_pid(-112, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(18, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(22, 60);
-  chassis.wait_drive();
-
-  // //Fire triple stack
-  chassis.set_turn_pid(-32, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(-13, DRIVE_SPEED);
-  chassis.wait_drive();
-  indexer = 127;
-  pros::delay(160);
-  indexer = 0;
-  pros::delay(500);
-  indexer = 127;
-  pros::delay(160);
-  indexer = 0;
-  pros::delay(500);
-  indexer = 127;
-  pros::delay(160);
-  indexer = 0;
-
-
-
-  // additional part
-
-  pros::delay(200);
-  chassis.set_turn_pid(-133, 127);
-  chassis.wait_drive();
-
-  chassis.set_drive_pid(82, 127);
-  chassis.wait_drive();
-
-  chassis.set_turn_pid(-90, 127);
-  chassis.wait_drive();
-
-  chassis.set_drive_pid(5, 127);
-  chassis.wait_drive();
-  intake = 0;
-}
-
 void Skills(){
-  pros::Task fly = pros::Task(flywheel_task, (void*)1);
-  intakeLift.set_value(false);
+  skillsBool = true;
   tbh = 190.0;
   oneSpeed = false;
   skillSpeed = true;
-
-  
+  pros::Task fly = pros::Task(flywheel_task, (void*)1);
   chassis.set_drive_pid(3, DRIVE_SPEED, true);
   chassis.wait_drive();
   pros::delay(250);
@@ -382,9 +312,11 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_drive_pid(-47, DRIVE_SPEED, true);
   chassis.wait_drive();
+  shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
+  // shotBlocker.set_value(true);
   //intake and shoot low goal
   // chassis.set_turn_pid(-90, TURN_SPEED);
   // chassis.wait_drive();
@@ -408,6 +340,7 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_drive_pid(7, DRIVE_SPEED, true);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(400);
   indexer = 0;
@@ -420,7 +353,7 @@ void Skills(){
   indexer = 75;
   pros::delay(400);
   indexer = 0;
-
+  // shotBlocker.set_value(true);
   //intake and shoot 3 stack
   intakeLift.set_value(true);
   chassis.set_turn_pid(-137, TURN_SPEED);
@@ -442,10 +375,11 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_drive_pid(-35.5, DRIVE_SPEED, true);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
-
+  // shotBlocker.set_value(true);
   //turn to next 3 stack and shoot and rollers and intake and shi
   chassis.set_drive_pid(1, DRIVE_SPEED, true);
   chassis.wait_drive();
@@ -467,10 +401,11 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_drive_pid(-41, DRIVE_SPEED, true);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
-
+  // shotBlocker.set_value(true);
   //itnake and shoot 3 discs
   chassis.set_drive_pid(36, DRIVE_SPEED, true);
   chassis.wait_drive();
@@ -482,6 +417,7 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_drive_pid(6, DRIVE_SPEED, true);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(400);
   indexer = 0;
@@ -494,7 +430,7 @@ void Skills(){
   indexer = 75;
   pros::delay(400);
   indexer = 0;
-
+  // shotBlocker.set_value(true);
   //2nd to last 3 stack
   chassis.set_turn_pid(-311, TURN_SPEED);
   chassis.wait_drive();
@@ -509,10 +445,11 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_drive_pid(-36, DRIVE_SPEED, true);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
-
+  // shotBlocker.set_value(true);
   //last 3 stack
   chassis.set_drive_pid(1, DRIVE_SPEED, true);
   chassis.wait_drive();
@@ -527,10 +464,11 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_swing_pid(ez::LEFT_SWING, -265, TURN_SPEED);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 75;
   pros::delay(1200);
   indexer = 0;
-
+  // shotBlocker.set_value(true);
   //last disc
   chassis.set_swing_pid(ez::LEFT_SWING, -227, TURN_SPEED);
   chassis.wait_drive();
@@ -540,12 +478,14 @@ void Skills(){
   chassis.wait_drive();
   chassis.set_swing_pid(ez::LEFT_SWING, -250, TURN_SPEED);
   chassis.wait_drive();
+  // shotBlocker.set_value(false);
   indexer = 127;
   pros::delay(200);
   indexer = 0;
+  // shotBlocker.set_value(true);
   chassis.set_swing_pid(ez::RIGHT_SWING, -130, DRIVE_SPEED);
   chassis.wait_drive();
-  expansion.set_value(true);
+  expansion1.set_value(true);
   chassis.set_drive_pid(-27, DRIVE_SPEED, true);
   chassis.wait_drive();
 }

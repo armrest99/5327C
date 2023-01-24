@@ -1,6 +1,14 @@
 #include "main.h"
 #include "autons.hpp"
 #include "roboto/roboto.hpp"
+#define LEFT_WHEEL_FRONT_PORT 1
+#define LEFT_WHEEL_BACK_PORT 11
+#define LEFT_WHEEL_MIDDLE_PORT 12
+
+#define RIGHT_WHEEL_FRONT_PORT 14
+#define RIGHT_WHEEL_BACK_PORT 13
+#define RIGHT_WHEEL_MIDDLE_PORT 19
+#define PI 3.1415926
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
 // https://ez-robotics.github.io/EZ-Template/
@@ -8,45 +16,52 @@
 
 
 // Chassis constructor
-Drive chassis (
-  // Left Chassis Ports (negative port will reverse it!)
-  //   the first port is the sensored port (when trackers are not used!)
-  {-8, -18}
-  // Right Chassis Ports (negative port will reverse it!)
-  //   the first port is the sensored port (when trackers are not used!)
-  ,{9, 6}
+// Drive chassis (
+//   // Left Chassis Ports (negative port will reverse it!)
+//   //   the first port is the sensored port (when trackers are not used!)
+//   {-8, -18}
+//   // Right Chassis Ports (negative port will reverse it!)
+//   //   the first port is the sensored port (when trackers are not used!)
+//   ,{9, 6}
 
-  // IMU Port
-  ,21
+//   // IMU Port
+//   ,21
 
-  // Wheel Diameter (Remember, 4" wheels are actually 4.125!)
-  //    (or tracking wheel diameter)
-  ,4
+//   // Wheel Diameter (Remember, 4" wheels are actually 4.125!)
+//   //    (or tracking wheel diameter)
+//   ,4
 
-  // Cartridge RPM
-  //   (or tick per rotation if using tracking wheels)
-  ,600
+//   // Cartridge RPM
+//   //   (or tick per rotation if using tracking wheels)
+//   ,600
 
-  // External Gear Ratio (MUST BE DECIMAL)
-  //    (or gear ratio of tracking wheel)
-  // eg. if your drive is 84:36 where the 36t is powered, your RATIO would be 2.333.
-  // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 0.6.
-  ,2.333
+//   // External Gear Ratio (MUST BE DECIMAL)
+//   //    (or gear ratio of tracking wheel)
+//   // eg. if your drive is 84:36 where the 36t is powered, your RATIO would be 2.333.
+//   // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 0.6.
+//   ,2.333
 
-  // Uncomment if using tracking wheels
-  /*
-  // Left Tracking Wheel Ports (negative port will reverse it!)
-  // ,{1, 2} // 3 wire encoder
-  // ,8 // Rotation sensor
-  // Right Tracking Wheel Ports (negative port will reverse it!)
-  // ,{-3, -4} // 3 wire encoder
-  // ,-9 // Rotation sensor
-  */
+//   // Uncomment if using tracking wheels
+//   /*
+//   // Left Tracking Wheel Ports (negative port will reverse it!)
+//   // ,{1, 2} // 3 wire encoder
+//   // ,8 // Rotation sensor
+//   // Right Tracking Wheel Ports (negative port will reverse it!)
+//   // ,{-3, -4} // 3 wire encoder
+//   // ,-9 // Rotation sensor
+//   */
 
-  // Uncomment if tracking wheels are plugged into a 3 wire expander
-  // 3 Wire Port Expander Smart Port
-  // ,1
-);
+//   // Uncomment if tracking wheels are plugged into a 3 wire expander
+//   // 3 Wire Port Expander Smart Port
+//   // ,1
+// );
+pros::Motor left_wheel_front (LEFT_WHEEL_FRONT_PORT, true);
+pros::Motor left_wheel_back (LEFT_WHEEL_BACK_PORT, true);
+pros::Motor left_wheel_middle (LEFT_WHEEL_MIDDLE_PORT, true);
+
+pros::Motor right_wheel_front (RIGHT_WHEEL_FRONT_PORT);
+pros::Motor right_wheel_back (RIGHT_WHEEL_BACK_PORT);
+pros::Motor right_wheel_middle (RIGHT_WHEEL_MIDDLE_PORT);
 int flySpeed = 0;
 int inSpeed = 0;
 int indexSpeed = 0;
@@ -87,12 +102,11 @@ void initialize() {
   pros::delay(500); // Stop the user from doing anything while legacy ports configure.
 
   // Configure your chassis controls
-  chassis.toggle_modify_curve_with_controller(true); // Enables modifying the controller curve with buttons on the joysticks
-  // chassis.set_active_brake(0.1); // Sets the active brake kP. We recommend 0.1.
-  chassis.set_curve_default(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  // chassis.toggle_modify_curve_with_controller(true); // Enables modifying the controller curve with buttons on the joysticks
+  // // chassis.set_active_brake(0.1); // Sets the active brake kP. We recommend 0.1.
+  // chassis.set_curve_default(0, 0); // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
   void default_constants(); // Set the drive to your own constants from autons.cpp!
   void exit_condition_defaults(); // Set the exit conditions to your own constants from autons.cpp!
-  indexer.tare_position();
 
   // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
   // chassis.set_left_curve_buttons (pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT); // If using tank, only the left side is used.
@@ -103,7 +117,7 @@ void initialize() {
   //   Auton("Example Drive\n\nDrive forward and come back.", drive_example),
 
   // Initialize chassis and auton selector
-  chassis.initialize();
+  // chassis.initialize();
   //ez::as::initialize();
 }
 
@@ -133,13 +147,12 @@ void competition_initialize() {
 }
 void runFlywheelDrive(double velocity) {
   flywheel.move_voltage(velocity);
-  flywheel2.move_voltage(velocity);
 }
 void autoFlywheelDrive(double velocity) {
     //double velocity = *velo;
     //runFlywheel(velocity);
     
-    double change = .25;
+    double change = .3;
     double currentVelo = flywheel.get_actual_velocity(); 
     double error = velocity - currentVelo; 
     double output = flyDriveD + change * error;
@@ -158,7 +171,7 @@ void autoFlywheelDrive(double velocity) {
 void toggleIntake() {
 	if(inSpeed == 0){
 		inSpeed = 1;
-		intake.move_velocity(-370);
+		intake.move_velocity(-600);
 	}
 	else if(inSpeed == 1 && goingDown == false){
 		inSpeed = 2;
@@ -173,22 +186,6 @@ void toggleIntake() {
 		inSpeed = 0;
 		goingDown = false;
 		intake = 0;
-	}
-}
-void toggleSpeed() {
-	if(flySpeed == 0){
-		flySpeed = 1;
-		weeds = 430;
-	}
-	else if(flySpeed == 1 && goingDown == false){
-		flySpeed = 2;
-    goingDown = true;
-		weeds = 480;
-	}
-	else if(flySpeed == 2){
-		flySpeed = 0;
-		goingDown = false;
-		weeds = 0;
 	}
 }
 
@@ -248,12 +245,15 @@ void toggleSpeed() {
  * from where it left off.
  */
 void autonomous() {
-  chassis.reset_pid_targets(); // Resets PID targets to 0
-  chassis.reset_gyro(); // Reset gyro position to 0
-  chassis.reset_drive_sensor(); // Reset drive sensors to 0
-  chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
+  // chassis.reset_pid_targets(); // Resets PID targets to 0
+  // chassis.reset_gyro(); // Reset gyro position to 0
+  // chassis.reset_drive_sensor(); // Reset drive sensors to 0
+  // chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
-  Skills(); // Calls selected auton from autonomous selector.
+  // Skills(); // Calls selected auton from autonomous selector.
+  // left_awp();
+  leftAuton();
+  // rightAuton();
 }
 
 
@@ -277,26 +277,17 @@ void opcontrol() {
   // if (tbhToggle){
   //   pros::Task fly = pros::Task(flywheel_taskDrive, (void*) 1);
   // }
-  chassis.set_drive_brake(MOTOR_BRAKE_COAST);
   // flywheelGraphData *argsStruct = (flywheelGraphData *)args;
   bool l2;
   bool buttonB;
   while (true) {
-    printf("Hue value: %lf \n", optical_sensor.get_hue());
-    optical_sensor.set_led_pwm(100);
+    transmission.set_value(true);
     autoFlywheelDrive(390);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     
-    chassis.tank(); // Tank control
-    if(optical_sensor.get_hue() < 50){
-      intake.move_velocity(-520);
-    }
-    else {
-      intake = 0;
-    }
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && l1Engaged == false){
 			toggleIntake();
@@ -306,23 +297,25 @@ void opcontrol() {
     else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			l1Engaged = false;
 		}
-
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && l2Engaged == false){
-			toggleSpeed();
+			transmission.set_value(false);
 			l2Engaged = true;
 		}
-    else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+      transmission.set_value(true);
 			l2Engaged = false;
+		}
+    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+			l1Engaged = false;
 		}
 
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false){
-			indexer = 90;
+      intake = -127;
 			r1Engaged = true;
 		}
     else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			indexer = 0;
+      intake = 0;
       r1Engaged = false;
-      
 		}
     // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged == false){
 		// 	aEngaged = true;
@@ -331,7 +324,7 @@ void opcontrol() {
 		// 	aEngaged = false;
 		// }
     if (buttonB) {
-      expansion.set_value(true);
+      expansion1.set_value(true);
     }
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
       intakeLift.set_value(false);
@@ -347,7 +340,19 @@ void opcontrol() {
     // . . .
     // Put more user control code here!
     // . . .
+    float up_down = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+  	float left_right = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		float turnX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 
+    // Tank control
+    left_wheel_front.move(up_down);
+		left_wheel_middle.move(up_down);
+		left_wheel_back.move(up_down);
+
+		right_wheel_front.move(turnY);
+		right_wheel_middle.move(turnY);
+		right_wheel_back.move(turnY);
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
