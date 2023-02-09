@@ -55,12 +55,12 @@
 //   // 3 Wire Port Expander Smart Port
 //   // ,1
 // );
-pros::Motor left_wheel_front (LEFT_WHEEL_FRONT_PORT, true);
-pros::Motor left_wheel_back (LEFT_WHEEL_BACK_PORT, true);
+pros::Motor left_wheel_front (LEFT_WHEEL_FRONT_PORT);
+pros::Motor left_wheel_back (LEFT_WHEEL_BACK_PORT);
 pros::Motor left_wheel_middle (LEFT_WHEEL_MIDDLE_PORT, true);
 
-pros::Motor right_wheel_front (RIGHT_WHEEL_FRONT_PORT);
-pros::Motor right_wheel_back (RIGHT_WHEEL_BACK_PORT);
+pros::Motor right_wheel_front (RIGHT_WHEEL_FRONT_PORT, true);
+pros::Motor right_wheel_back (RIGHT_WHEEL_BACK_PORT, true);
 pros::Motor right_wheel_middle (RIGHT_WHEEL_MIDDLE_PORT);
 int flySpeed = 0;
 int inSpeed = 0;
@@ -281,6 +281,10 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
+    float up_down = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+  	float left_right = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		float turnX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
     transmission.set_value(true);
     autoFlywheelDrive(390);
     // pros::delay(100);
@@ -299,10 +303,24 @@ void opcontrol() {
 		}
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && l2Engaged == false){
 			transmission.set_value(false);
+      left_wheel_front.move(-up_down);
+		  left_wheel_middle.move(-up_down);
+		  left_wheel_back.move(-up_down);
+
+		  right_wheel_front.move(-turnY);
+		  right_wheel_middle.move(-turnY);
+		  right_wheel_back.move(-turnY);
 			l2Engaged = true;
 		}
     else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
       transmission.set_value(true);
+      left_wheel_front.move(up_down);
+		  left_wheel_middle.move(up_down);
+		  left_wheel_back.move(up_down);
+
+		  right_wheel_front.move(turnY);
+		  right_wheel_middle.move(turnY);
+		  right_wheel_back.move(turnY);
 			l2Engaged = false;
 		}
     else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
@@ -340,19 +358,10 @@ void opcontrol() {
     // . . .
     // Put more user control code here!
     // . . .
-    float up_down = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-  	float left_right = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
-		float turnX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+    
 
     // Tank control
-    left_wheel_front.move(up_down);
-		left_wheel_middle.move(up_down);
-		left_wheel_back.move(up_down);
-
-		right_wheel_front.move(turnY);
-		right_wheel_middle.move(turnY);
-		right_wheel_back.move(turnY);
+    
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }
