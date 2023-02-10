@@ -193,7 +193,7 @@ void rightAuton() {
   // fire preloads
   chassis.set_turn_pid(-25, TURN_SPEED);
   chassis.wait_drive();
-  intake = 127
+  intake = 127;
   chassis.set_drive_pid(5, DRIVE_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(-5, DRIVE_SPEED);

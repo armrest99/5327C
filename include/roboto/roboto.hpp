@@ -11,6 +11,7 @@ extern pros::Motor indexer;
 extern pros::Motor intake;
 extern pros::ADIDigitalOut expansion;
 extern pros::ADIDigitalOut expansion1;
+extern pros::ADIDigitalOut expansionBottom;
 extern pros::ADIDigitalOut intakeLift;
 extern pros::ADIDigitalOut transmission;
 extern pros::ADIAnalogIn sensor;
