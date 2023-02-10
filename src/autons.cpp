@@ -81,7 +81,7 @@ void runFlywheel(double velocity) { flywheel.move_voltage(velocity); }
 void autoFlywheel(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
-  double change = .3;
+  double change = .25;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   output += (change * error);
@@ -121,7 +121,7 @@ void flywheel_task(void *param) {
     // }
 
     // autoFlywheel(v);
-    pros::delay(ez::util::DELAY_TIME);
+    pros::delay(1);
   }
 }
 ///
@@ -155,61 +155,73 @@ void flyPID(float voltage) {
   }
 }
 void rightAuton() {
-  // roller
+  // roller and 3 stack
+  skillSpeed = false;
   skillsBool = false;
   tbh = 235.0;
   oneSpeed = true;
   isAuton = true;
   pros::Task fly = pros::Task(flywheel_task, (void *)1);
-  intake = -127;
-  chassis.set_drive_pid(20, DRIVE_SPEED);
+  intake = 127;
+  intakeLift.set_value(false);
+  chassis.set_drive_pid(-6.97056274848, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_turn_pid(90, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(4.25, DRIVE_SPEED);
-  chassis.wait_drive();
-
-  // fire preloads
-  chassis.set_drive_pid(-5, DRIVE_SPEED);
-  chassis.wait_drive();
-
-  chassis.set_turn_pid(98, TURN_SPEED);
-  chassis.wait_drive();
-
-  pros::delay(1000);
-  indexer.move_velocity(125);
-  pros::delay(310);
-  indexer = 0;
-  pros::delay(720);
-  indexer.move_velocity(125);
-  pros::delay(310);
-  indexer = 0;
-
-  // triple disc
+  intakeLift.set_value(true);
   pros::delay(500);
-  oneSpeed = true;
-  chassis.set_turn_pid(223, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(62, DRIVE_SPEED);
-  chassis.wait_drive();
-
-  // Fire triple stack
-  chassis.set_turn_pid(130, TURN_SPEED);
-  chassis.wait_drive();
   chassis.set_drive_pid(5, DRIVE_SPEED);
   chassis.wait_drive();
-  pros::delay(800);
-  indexer.move_velocity(125);
-  pros::delay(310);
-  indexer = 0;
-  pros::delay(700);
-  indexer.move_velocity(125);
-  pros::delay(310);
-  indexer = 0;
-  pros::delay(700);
-  indexer.move_velocity(125);
-  pros::delay(310);
-  indexer = 0;
+  transmission.set_value(true);
+  chassis.set_turn_pid(-75, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-10, DRIVE_SPEED);
+  chassis.wait_drive();
+  intake = 0;
+  chassis.set_turn_pid(-45, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-15, DRIVE_SPEED);
+  chassis.wait_drive();
+  intake = 127;
+  pros::delay(100);
+  intake = 0;
+  chassis.set_drive_pid(5, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-35, TURN_SPEED);
+  chassis.wait_drive();
+  intake.move_velocity(-500);
+  pros::delay(200);
+
+  // fire preloads
+  chassis.set_turn_pid(-25, TURN_SPEED);
+  chassis.wait_drive();
+  intake = 127
+  chassis.set_drive_pid(5, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-5, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-135, TURN_SPEED);
+  chassis.wait_drive();
+  
+  chassis.set_drive_pid(35, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-15, TURN_SPEED);
+  chassis.wait_drive();
+  intake.move_velocity(-500);
+  pros::delay(200);
+
+  // triple disc
+  chassis.set_turn_pid(-45, TURN_SPEED);
+  chassis.wait_drive();
+  intake = 127;
+  chassis.set_drive_pid(15, DRIVE_SPEED);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-90, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(28, DRIVE_SPEED);
+  chassis.set_drive_pid(-7, DRIVE_SPEED);
+  chassis.set_turn_pid(-5, TURN_SPEED);
+  chassis.wait_drive();
+  intake.move_velocity(-500);
+  pros::delay(200);
 }
 
 void leftAuton() {
@@ -232,13 +244,13 @@ void leftAuton() {
   chassis.wait_drive();
   // shotBlocker.set_value(false);
   pros::delay(700);
-  indexer = 127;
+  intake = 127;
   pros::delay(160);
-  indexer = 0;
+  intake = 0;
   pros::delay(800);
-  indexer = 127;
+  intake = 127;
   pros::delay(160);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   pros::delay(400);
   oneSpeed = false;
@@ -258,17 +270,17 @@ void leftAuton() {
   chassis.set_drive_pid(-8, DRIVE_SPEED);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 127;
+  intake = 127;
   pros::delay(160);
-  indexer = 0;
+  intake = 0;
   pros::delay(700);
-  indexer = 127;
+  intake = 127;
   pros::delay(160);
-  indexer = 0;
+  intake = 0;
   pros::delay(700);
-  indexer = 127;
+  intake = 127;
   pros::delay(160);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // //Low goal discs
   // chassis.set_drive_pid(10, DRIVE_SPEED);
@@ -279,9 +291,9 @@ void leftAuton() {
   // chassis.wait_drive();
   // chassis.set_turn_pid(-10, TURN_SPEED);
   // chassis.wait_drive();
-  // indexer = 127;
+  // intake = 127;
   // pros::delay(850);
-  // indexer = 0;
+  // intake = 0;
   // fly.notify();
 }
 
@@ -311,9 +323,9 @@ void Skills() {
   chassis.set_drive_pid(-47, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(1200);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // intake and shoot low goal
   // chassis.set_turn_pid(-90, TURN_SPEED);
@@ -324,9 +336,9 @@ void Skills() {
   // chassis.wait_drive();
   // chassis.set_turn_pid(0, TURN_SPEED);
   // chassis.wait_drive();
-  // indexer = 80;
+  // intake = 80;
   // pros::delay(1050);
-  // indexer = 0;
+  // intake = 0;
   // intake and shoot 3 disc in line
   chassis.set_drive_pid(34, DRIVE_SPEED, true);
   chassis.wait_drive();
@@ -339,18 +351,18 @@ void Skills() {
   chassis.set_drive_pid(7, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(400);
-  indexer = 0;
+  intake = 0;
   chassis.set_drive_pid(-5, DRIVE_SPEED, true);
   chassis.wait_drive();
-  indexer = 75;
+  intake = 75;
   pros::delay(400);
-  indexer = 0;
+  intake = 0;
   pros::delay(200);
-  indexer = 75;
+  intake = 75;
   pros::delay(400);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // intake and shoot 3 stack
   intakeLift.set_value(true);
@@ -374,9 +386,9 @@ void Skills() {
   chassis.set_drive_pid(-35.5, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(1200);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // turn to next 3 stack and shoot and rollers and intake and shi
   chassis.set_drive_pid(1, DRIVE_SPEED, true);
@@ -400,9 +412,9 @@ void Skills() {
   chassis.set_drive_pid(-41, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(1200);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // itnake and shoot 3 discs
   chassis.set_drive_pid(36, DRIVE_SPEED, true);
@@ -416,18 +428,18 @@ void Skills() {
   chassis.set_drive_pid(6, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(400);
-  indexer = 0;
+  intake = 0;
   chassis.set_drive_pid(-6, DRIVE_SPEED, true);
   chassis.wait_drive();
-  indexer = 75;
+  intake = 75;
   pros::delay(400);
-  indexer = 0;
+  intake = 0;
   pros::delay(200);
-  indexer = 75;
+  intake = 75;
   pros::delay(400);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // 2nd to last 3 stack
   chassis.set_turn_pid(-311, TURN_SPEED);
@@ -444,9 +456,9 @@ void Skills() {
   chassis.set_drive_pid(-36, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(1200);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // last 3 stack
   chassis.set_drive_pid(1, DRIVE_SPEED, true);
@@ -463,9 +475,9 @@ void Skills() {
   chassis.set_swing_pid(ez::LEFT_SWING, -265, TURN_SPEED);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 75;
+  intake = 75;
   pros::delay(1200);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   // last disc
   chassis.set_swing_pid(ez::LEFT_SWING, -227, TURN_SPEED);
@@ -477,9 +489,9 @@ void Skills() {
   chassis.set_swing_pid(ez::LEFT_SWING, -250, TURN_SPEED);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  indexer = 127;
+  intake = 127;
   pros::delay(200);
-  indexer = 0;
+  intake = 0;
   // shotBlocker.set_value(true);
   chassis.set_swing_pid(ez::RIGHT_SWING, -130, DRIVE_SPEED);
   chassis.wait_drive();

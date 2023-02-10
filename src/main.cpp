@@ -16,45 +16,45 @@
 
 
 // Chassis constructor
-// Drive chassis (
-//   // Left Chassis Ports (negative port will reverse it!)
-//   //   the first port is the sensored port (when trackers are not used!)
-//   {-8, -18}
-//   // Right Chassis Ports (negative port will reverse it!)
-//   //   the first port is the sensored port (when trackers are not used!)
-//   ,{9, 6}
+Drive chassis (
+  // Left Chassis Ports (negative port will reverse it!)
+  //   the first port is the sensored port (when trackers are not used!)
+  {11, -12, 1}
+  // Right Chassis Ports (negative port will reverse it!)
+  //   the first port is the sensored port (when trackers are not used!)
+  ,{-13, 19, -14}
 
-//   // IMU Port
-//   ,21
+  // IMU Port
+  ,21
 
-//   // Wheel Diameter (Remember, 4" wheels are actually 4.125!)
-//   //    (or tracking wheel diameter)
-//   ,4
+  // Wheel Diameter (Remember, 4" wheels are actually 4.125!)
+  //    (or tracking wheel diameter)
+  ,4
 
-//   // Cartridge RPM
-//   //   (or tick per rotation if using tracking wheels)
-//   ,600
+  // Cartridge RPM
+  //   (or tick per rotation if using tracking wheels)
+  ,600
 
-//   // External Gear Ratio (MUST BE DECIMAL)
-//   //    (or gear ratio of tracking wheel)
-//   // eg. if your drive is 84:36 where the 36t is powered, your RATIO would be 2.333.
-//   // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 0.6.
-//   ,2.333
+  // External Gear Ratio (MUST BE DECIMAL)
+  //    (or gear ratio of tracking wheel)
+  // eg. if your drive is 84:36 where the 36t is powered, your RATIO would be 2.333.
+  // eg. if your drive is 36:60 where the 60t is powered, your RATIO would be 0.6.
+  ,2
 
-//   // Uncomment if using tracking wheels
-//   /*
-//   // Left Tracking Wheel Ports (negative port will reverse it!)
-//   // ,{1, 2} // 3 wire encoder
-//   // ,8 // Rotation sensor
-//   // Right Tracking Wheel Ports (negative port will reverse it!)
-//   // ,{-3, -4} // 3 wire encoder
-//   // ,-9 // Rotation sensor
-//   */
+  // Uncomment if using tracking wheels
+  /*
+  // Left Tracking Wheel Ports (negative port will reverse it!)
+  // ,{1, 2} // 3 wire encoder
+  // ,8 // Rotation sensor
+  // Right Tracking Wheel Ports (negative port will reverse it!)
+  // ,{-3, -4} // 3 wire encoder
+  // ,-9 // Rotation sensor
+  */
 
-//   // Uncomment if tracking wheels are plugged into a 3 wire expander
-//   // 3 Wire Port Expander Smart Port
-//   // ,1
-// );
+  // Uncomment if tracking wheels are plugged into a 3 wire expander
+  // 3 Wire Port Expander Smart Port
+  // ,1
+);
 pros::Motor left_wheel_front (LEFT_WHEEL_FRONT_PORT);
 pros::Motor left_wheel_back (LEFT_WHEEL_BACK_PORT);
 pros::Motor left_wheel_middle (LEFT_WHEEL_MIDDLE_PORT, true);
@@ -245,10 +245,10 @@ void toggleIntake() {
  * from where it left off.
  */
 void autonomous() {
-  // chassis.reset_pid_targets(); // Resets PID targets to 0
-  // chassis.reset_gyro(); // Reset gyro position to 0
-  // chassis.reset_drive_sensor(); // Reset drive sensors to 0
-  // chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
+  chassis.reset_pid_targets(); // Resets PID targets to 0
+  chassis.reset_gyro(); // Reset gyro position to 0
+  chassis.reset_drive_sensor(); // Reset drive sensors to 0
+  chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
 
   // Skills(); // Calls selected auton from autonomous selector.
   // left_awp();
@@ -281,27 +281,27 @@ void opcontrol() {
   bool l2;
   bool buttonB;
   while (true) {
+    pros::Motor left_wheel_front (LEFT_WHEEL_FRONT_PORT);
+    pros::Motor left_wheel_back (LEFT_WHEEL_BACK_PORT);
+    pros::Motor left_wheel_middle (LEFT_WHEEL_MIDDLE_PORT, true);
+
+    pros::Motor right_wheel_front (RIGHT_WHEEL_FRONT_PORT, true);
+    pros::Motor right_wheel_back (RIGHT_WHEEL_BACK_PORT, true);
+    pros::Motor right_wheel_middle (RIGHT_WHEEL_MIDDLE_PORT);
+    chassis.set_drive_brake(MOTOR_BRAKE_COAST);
     float up_down = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
   	float left_right = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
 		float turnX = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 		float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
     transmission.set_value(true);
+    
     autoFlywheelDrive(390);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
     
-
     if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && l1Engaged == false){
-			toggleIntake();
-			l1Engaged = true;
-		}
-    
-    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
-			l1Engaged = false;
-		}
-    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && l2Engaged == false){
 			transmission.set_value(false);
       left_wheel_front.move(-up_down);
 		  left_wheel_middle.move(-up_down);
@@ -310,9 +310,9 @@ void opcontrol() {
 		  right_wheel_front.move(-turnY);
 		  right_wheel_middle.move(-turnY);
 		  right_wheel_back.move(-turnY);
-			l2Engaged = true;
+			l1Engaged = true;
 		}
-    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
       transmission.set_value(true);
       left_wheel_front.move(up_down);
 		  left_wheel_middle.move(up_down);
@@ -321,9 +321,6 @@ void opcontrol() {
 		  right_wheel_front.move(turnY);
 		  right_wheel_middle.move(turnY);
 		  right_wheel_back.move(turnY);
-			l2Engaged = false;
-		}
-    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			l1Engaged = false;
 		}
 
@@ -332,7 +329,7 @@ void opcontrol() {
 			r1Engaged = true;
 		}
     else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-      intake = 0;
+      intake = 127;
       r1Engaged = false;
 		}
     // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged == false){
@@ -342,10 +339,15 @@ void opcontrol() {
 		// 	aEngaged = false;
 		// }
     if (buttonB) {
-      expansion1.set_value(true);
+      expansionBottom.set_value(true);
     }
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-      intakeLift.set_value(false);
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+      expansion.set_value(true);
+      expansionBottom.set_value(true);
+    }
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)){
+      expansion1.set_value(true);
+      expansionBottom.set_value(true);
     }
 
 
