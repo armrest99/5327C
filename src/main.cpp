@@ -61,13 +61,7 @@ Drive chassis(
     // 3 Wire Port Expander Smart Port
     // ,1
 );
-pros::Motor left_wheel_front(LEFT_WHEEL_FRONT_PORT);
-pros::Motor left_wheel_back(LEFT_WHEEL_BACK_PORT);
-pros::Motor left_wheel_middle(LEFT_WHEEL_MIDDLE_PORT, true);
 
-pros::Motor right_wheel_front(RIGHT_WHEEL_FRONT_PORT, true);
-pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT, true);
-pros::Motor right_wheel_middle(RIGHT_WHEEL_MIDDLE_PORT);
 int flySpeed = 0;
 int inSpeed = 0;
 int indexSpeed = 0;
@@ -83,6 +77,7 @@ double tbhDrive = 190.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
 int weeds;
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
