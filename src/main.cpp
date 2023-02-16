@@ -1,13 +1,13 @@
 #include "main.h"
 #include "autons.hpp"
 #include "roboto/roboto.hpp"
-#define LEFT_WHEEL_FRONT_PORT 1
-#define LEFT_WHEEL_BACK_PORT 11
-#define LEFT_WHEEL_MIDDLE_PORT 12
+#define LEFT_WHEEL_FRONT_PORT 16
+#define LEFT_WHEEL_BACK_PORT 17
+#define LEFT_WHEEL_MIDDLE_PORT 18
 
-#define RIGHT_WHEEL_FRONT_PORT 14
-#define RIGHT_WHEEL_BACK_PORT 13
-#define RIGHT_WHEEL_MIDDLE_PORT 19
+#define RIGHT_WHEEL_FRONT_PORT 13
+#define RIGHT_WHEEL_BACK_PORT 15
+#define RIGHT_WHEEL_MIDDLE_PORT 14
 #define PI 3.1415926
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
@@ -19,11 +19,11 @@
 Drive chassis(
     // Left Chassis Ports (negative port will reverse it!)
     //   the first port is the sensored port (when trackers are not used!)
-    {11, -12, 1}
+    {16, -17, 18}
     // Right Chassis Ports (negative port will reverse it!)
     //   the first port is the sensored port (when trackers are not used!)
     ,
-    {-13, 19, -14}
+    {-13, 14, -15}
 
     // IMU Port
     ,
@@ -180,7 +180,7 @@ void toggleIntake() {
   } else if (inSpeed == 2) {
     inSpeed = 1;
     goingDown = true;
-    intake.move_velocity(600);
+    intake.move_velocity(-600);
   } else if (inSpeed == 1 && goingDown == true) {
     inSpeed = 0;
     goingDown = false;
@@ -280,10 +280,10 @@ void opcontrol() {
   bool buttonB;
   pros::Motor left_wheel_front(LEFT_WHEEL_FRONT_PORT);
   pros::Motor left_wheel_back(LEFT_WHEEL_BACK_PORT);
-  pros::Motor left_wheel_middle(LEFT_WHEEL_MIDDLE_PORT, true);
+  pros::Motor left_wheel_middle(LEFT_WHEEL_MIDDLE_PORT);
 
-  pros::Motor right_wheel_front(RIGHT_WHEEL_FRONT_PORT, true);
-  pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT, true);
+  pros::Motor right_wheel_front(RIGHT_WHEEL_FRONT_PORT);
+  pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT);
   pros::Motor right_wheel_middle(RIGHT_WHEEL_MIDDLE_PORT);
   while (true) {
     chassis.set_drive_brake(MOTOR_BRAKE_COAST);
@@ -299,8 +299,7 @@ void opcontrol() {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1) &&
-        l1Engaged == false) {
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
       transmission.set_value(false);
       left_wheel_front.move(-up_down);
       left_wheel_middle.move(-up_down);
@@ -310,7 +309,8 @@ void opcontrol() {
       right_wheel_middle.move(-turnY);
       right_wheel_back.move(-turnY);
       l1Engaged = true;
-    } else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+    } 
+      if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
       transmission.set_value(true);
       left_wheel_front.move(up_down);
       left_wheel_middle.move(up_down);
