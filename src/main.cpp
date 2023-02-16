@@ -154,7 +154,7 @@ void autoFlywheelDrive(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
 
-  double change = .3;
+  double change = .25;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   double output = flyDriveD + change * error;
@@ -180,7 +180,7 @@ void toggleIntake() {
   } else if (inSpeed == 2) {
     inSpeed = 1;
     goingDown = true;
-    intake.move_velocity(-600);
+    intake.move_velocity(600);
   } else if (inSpeed == 1 && goingDown == true) {
     inSpeed = 0;
     goingDown = false;
@@ -299,7 +299,7 @@ void opcontrol() {
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
     l2 = controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
       transmission.set_value(false);
       left_wheel_front.move(-up_down);
       left_wheel_middle.move(-up_down);
@@ -308,9 +308,8 @@ void opcontrol() {
       right_wheel_front.move(-turnY);
       right_wheel_middle.move(-turnY);
       right_wheel_back.move(-turnY);
-      l1Engaged = true;
     } 
-      if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+      if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
       transmission.set_value(true);
       left_wheel_front.move(up_down);
       left_wheel_middle.move(up_down);
@@ -319,15 +318,13 @@ void opcontrol() {
       right_wheel_front.move(turnY);
       right_wheel_middle.move(turnY);
       right_wheel_back.move(turnY);
-      l1Engaged = false;
     }
 
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) &&
-        r1Engaged == false) {
-      intake = -127;
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && r1Engaged == false) {
+      toggleIntake();
       r1Engaged = true;
-    } else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      intake = 127;
+    } 
+    else if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
       r1Engaged = false;
     }
     // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && aEngaged ==
