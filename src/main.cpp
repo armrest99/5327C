@@ -293,7 +293,7 @@ void opcontrol() {
     float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
     transmission.set_value(true);
 
-    autoFlywheelDrive(470);
+    autoFlywheelDrive(540);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
