@@ -7,7 +7,7 @@
 const float PI = 3.1415926;
 
 
-pros::Motor flywheel(11, pros::E_MOTOR_GEARSET_06, 0,
+pros::Motor flywheel(6, pros::E_MOTOR_GEARSET_06, 0,
                      pros::E_MOTOR_ENCODER_COUNTS);
 pros::Motor intake(1, pros::E_MOTOR_GEARSET_06, 0,
                    pros::E_MOTOR_ENCODER_COUNTS);
