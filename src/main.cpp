@@ -83,6 +83,7 @@ lv_obj_t *chart = lv_chart_create(lv_scr_act(), nullptr);
 lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
 lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
 void initialize() {
+  transmission.set_value(true);
   // Print our branding over your terminal :D
   lv_obj_set_size(chart, 500, 200);
   lv_obj_align(chart, nullptr, LV_ALIGN_CENTER, 0, 0);
