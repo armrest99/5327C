@@ -1,4 +1,4 @@
-#include "debug.hpp"
+// #include "debug.hpp"
 #include "display/lv_core/lv_obj.h"
 #include "display/lv_objx/lv_btn.h"
 #include "main.h"

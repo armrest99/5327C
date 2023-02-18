@@ -22,30 +22,25 @@ Drive chassis(
     {16, -17, 18}
     // Right Chassis Ports (negative port will reverse it!)
     //   the first port is the sensored port (when trackers are not used!)
-    ,
-    {-13, 14, -15}
+    ,{-13, 14, -15}
 
     // IMU Port
-    ,
-    21
+    ,3
 
     // Wheel Diameter (Remember, 4" wheels are actually 4.125!)
     //    (or tracking wheel diameter)
-    ,
-    4
+    ,4
 
     // Cartridge RPM
     //   (or tick per rotation if using tracking wheels)
-    ,
-    600
+    ,600
 
     // External Gear Ratio (MUST BE DECIMAL)
     //    (or gear ratio of tracking wheel)
     // eg. if your drive is 84:36 where the 36t is powered, your RATIO would
     // be 2.333. eg. if your drive is 36:60 where the 60t is powered, your RATIO
     // would be 0.6.
-    ,
-    2
+    ,2
 
     // Uncomment if using tracking wheels
     /*
@@ -99,8 +94,7 @@ void initialize() {
   lv_chart_set_point_count(chart, 1000);
   // ez::print_ez_template();
 
-  pros::delay(
-      500); // Stop the user from doing anything while legacy ports configure.
+  pros::delay(500); // Stop the user from doing anything while legacy ports configure.
 
   // Configure your chassis controls
   // chassis.toggle_modify_curve_with_controller(true); // Enables modifying the
@@ -109,8 +103,7 @@ void initialize() {
   // 0.1. chassis.set_curve_default(0, 0); // Defaults for curve. If using tank,
   // only the first parameter is used. (Comment this line out if you have an SD
   // card!)
-  void
-  default_constants(); // Set the drive to your own constants from autons.cpp!
+  void default_constants(); // Set the drive to your own constants from autons.cpp!
   void exit_condition_defaults(); // Set the exit conditions to your own
                                   // constants from autons.cpp!
 
@@ -148,13 +141,17 @@ void disabled() {
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() { initialize(); }
-void runFlywheelDrive(double velocity) { flywheel.move_voltage(velocity); }
+void competition_initialize() { 
+  initialize(); 
+}
+void runFlywheelDrive(double velocity) { 
+  flywheel.move_voltage(velocity); 
+}
 void autoFlywheelDrive(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
 
-  double change = .25;
+  double change = .2;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   double output = flyDriveD + change * error;
@@ -293,7 +290,7 @@ void opcontrol() {
     float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
     transmission.set_value(true);
 
-    autoFlywheelDrive(390);
+    autoFlywheelDrive(470);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);

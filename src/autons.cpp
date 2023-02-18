@@ -81,7 +81,7 @@ void runFlywheel(double velocity) { flywheel.move_voltage(velocity); }
 void autoFlywheel(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
-  double change = .25;
+  double change = .2;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   output += (change * error);
@@ -104,7 +104,7 @@ void flywheel_task(void *param) {
     // pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false,
     // TIMEOUT_MAX)))
     if (oneSpeed) {
-      autoFlywheel(470);
+      autoFlywheel(520);
     } else if (skillSpeed) {
       autoFlywheel(380);
     } else {
