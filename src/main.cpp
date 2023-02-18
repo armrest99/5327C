@@ -283,6 +283,9 @@ void opcontrol() {
   pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT);
   pros::Motor right_wheel_middle(RIGHT_WHEEL_MIDDLE_PORT);
   while (true) {
+    intakeLift.set_value(true);
+    expansion1.set_value(false);
+    expansion.set_value(false);
     chassis.set_drive_brake(MOTOR_BRAKE_COAST);
     float up_down = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     float left_right = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
@@ -330,16 +333,16 @@ void opcontrol() {
     // else if(!controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
     // 	aEngaged = false;
     // }
-    if (buttonB) {
-      expansionBottom.set_value(true);
-    }
+    // if (buttonB) {
+    //   expansionBottom.set_value(true);
+    // }
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
       expansion.set_value(true);
-      expansionBottom.set_value(true);
+      // expansionBottom.set_value(true);
     }
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
       expansion1.set_value(true);
-      expansionBottom.set_value(true);
+      // expansionBottom.set_value(true);
     }
 
     // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
