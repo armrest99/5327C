@@ -17,8 +17,8 @@
 
 /**                                                                            \
  * If defined, some commonly used enums will have preprocessor macros which    \
- * give a shorter, more convenient naming pattern. If this isn't desired,             \
- * simply comment the following line out.                                               \
+ * give a shorter, more convenient naming pattern. If this isn't desired,      \
+ * simply comment the following line out.                                      \
  *                                                                             \
  * For instance, E_CONTROLLER_MASTER has a shorter name: CONTROLLER_MASTER.    \
  * E_CONTROLLER_MASTER is pedantically correct within the PROS styleguide, but \
@@ -42,6 +42,7 @@
 // #include "okapi/api.hpp"
 // #include "pros/api_legacy.h"
 #include "EZ-Template/api.hpp"
+#include "pros/apix.h"
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
  * Motor, you can use the namespace with the following commented out line.
