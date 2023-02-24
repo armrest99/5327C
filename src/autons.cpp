@@ -1,3 +1,4 @@
+#include "autons.hpp"
 #include "main.h"
 #include "pros/misc.h"
 #include "roboto/roboto.hpp"
@@ -105,11 +106,9 @@ void flywheel_task(void *param) {
     // TIMEOUT_MAX)))
     if (oneSpeed) {
       autoFlywheel(520);
-    } 
-    else if (skillSpeed) {
+    } else if (skillSpeed) {
       autoFlywheel(380);
-    } 
-    else {
+    } else {
       autoFlywheel(435);
     }
     // if (skillsBool){
@@ -202,13 +201,13 @@ void rightAuton() {
   pros::delay(100);
   intake.move_absolute(50, 600);
   intake = -127;
-  chassis.set_drive_pid(10 DRIVE_SPEED);
+  chassis.set_drive_pid(10, DRIVE_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(-10, DRIVE_SPEED);
   chassis.wait_drive();
   chassis.set_turn_pid(-135, TURN_SPEED);
   chassis.wait_drive();
-  
+
   chassis.set_drive_pid(25, DRIVE_SPEED);
   chassis.wait_drive();
   pros::delay(100);
