@@ -2,6 +2,7 @@
 #include "display/lv_core/lv_obj.h"
 #include "display/lv_objx/lv_btn.h"
 #include "main.h"
+#include "pros/apix.h"
 // #include <format>
 #include <string>
 
@@ -9,23 +10,23 @@
 #define DEBUG
 #endif
 
-static void event_handler(lv_obj_t *obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    print("Clicked\n");
-  } else if (event == LV_EVENT_VALUE_CHANGED) {
-    print("Toggled\n");
-  }
-}
+// static void event_handler(lv_obj_t *obj, lv_event_t event) {
+//   if (event == LV_EVENT_CLICKED) {
+//     printf("Clicked\n");
+//   } else if (event == LV_EVENT_VALUE_CHANGED) {
+//     printf("Toggled\n");
+//   }
+// }
 
 // auton selector
-void auton_selector() {
-  lv_obj_t *label;
-  lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
-  lv_obj_set_event_cb(btn1, event_handler);
-  lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
+// void auton_selector() {
+//   lv_obj_t *label;
+//   lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
+//   lv_obj_set_event_cb(btn1, event_handler);
+//   lv_obj_align(btn1, NULL, LV_ALIGN_CENTER, 0, -40);
 
-  label = lv_label_create();
-}
+//   label = lv_label_create();
+// }
 
 void motor_check_overheat() {
   // left
@@ -33,11 +34,11 @@ void motor_check_overheat() {
   pros::Motor_Group right_wheels({14, 19, 13});
   std::vector<std::int32_t> left_temps;
   std::vector<std::int32_t> right_temps;
-  std::array<lv_obj_t *, 3> left_buttons;
+  std::vector<lv_obj_t *> left_buttons;
+  std::vector<lv_obj_t *> right_buttons;
   for (std::size_t i = 0; i < left_temps.size(); i++) {
     left_buttons[i] = lv_label_create(lv_scr_act(), NULL);
   }
-  std::array<lv_obj_t *, 3> right_buttons;
   for (std::size_t i = 0; i < left_temps.size(); i++) {
     right_buttons[i] = lv_label_create(lv_scr_act(), NULL);
   }
@@ -47,20 +48,26 @@ void motor_check_overheat() {
     left_temps = left_wheels.are_over_temp();
     right_temps = right_wheels.are_over_temp();
     for (std::size_t i = 0; i < left_temps.size(); i++) {
-      if (left_temps[i] == 0) {
-        lv_label_set_text(left_temps[i], "motor " + std::to_string(i) + ": ok");
-      } else if (left_temps[i] == 1) {
-        lv_label_set_text(left_temps[i], "#ff0000 motor " + std::to_string(i) +
-                                             " overheating!#");
+      std::size_t temp = left_temps[i];
+      if (temp < 55) {
+        lv_label_set_text(left_buttons[i],
+                          ("motor " + std::to_string(i) + ": ok").c_str());
+      } else if (temp >= 55) {
+        lv_label_set_text(
+            left_buttons[i],
+            ("#ff0000 motor " + std::to_string(i) + " overheating!#").c_str());
       }
     }
     // definitely not duplication of code
-    for (std::size_t i = 0; i < left_temps.size(); i++) {
-      if (left_temps[i] == 0) {
-        lv_label_set_text(left_temps[i], "motor " + std::to_string(i) + ": ok");
-      } else if (left_temps[i] == 1) {
-        lv_label_set_text(left_temps[i], "#ff0000 motor" + std::to_string(i) +
-                                             ": overheating!#");
+    for (std::size_t i = 0; i < right_temps.size(); i++) {
+      std::size_t temp = right_temps[i];
+      if (temp < 55) {
+        lv_label_set_text(right_buttons[i],
+                          ("motor " + std::to_string(i) + ": ok").c_str());
+      } else if (temp >= 55) {
+        lv_label_set_text(
+            right_buttons[i],
+            ("#ff0000 motor" + std::to_string(i) + ": overheating!#").c_str());
       }
     }
   }

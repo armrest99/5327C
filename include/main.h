@@ -4,7 +4,7 @@
  * Contains common definitions and header files used throughout your PROS
  * project.
  *
- * Copyright (c) 2017-2021, Purdue University ACM SIGBots.
+ * Copyright (c) 2017-2022, Purdue University ACM SIGBots.
  * All rights reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,15 +15,15 @@
 #ifndef _PROS_MAIN_H_
 #define _PROS_MAIN_H_
 
-/**
- * If defined, some commonly used enums will have preprocessor macros which give
- * a shorter, more convenient naming pattern. If this isn't desired, simply
- * comment the following line out.
- *
- * For instance, E_CONTROLLER_MASTER has a shorter name: CONTROLLER_MASTER.
- * E_CONTROLLER_MASTER is pedantically correct within the PROS styleguide, but
- * not convienent for most student programmers.
- */
+/**                                                                            \
+ * If defined, some commonly used enums will have preprocessor macros which    \
+ * give a shorter, more convenient naming pattern. If this isn't desired,      \
+ * simply comment the following line out.                                      \
+ *                                                                             \
+ * For instance, E_CONTROLLER_MASTER has a shorter name: CONTROLLER_MASTER.    \
+ * E_CONTROLLER_MASTER is pedantically correct within the PROS styleguide, but \
+ * not convienent for most student programmers.                                \
+ */                                                                            \
 #define PROS_USE_SIMPLE_NAMES
 
 /**
@@ -42,13 +42,7 @@
 // #include "okapi/api.hpp"
 // #include "pros/api_legacy.h"
 #include "EZ-Template/api.hpp"
-#include "autons.hpp"
 #include "pros/apix.h"
-
-// More includes here...
-//
-// . . .
-
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
  * Motor, you can use the namespace with the following commented out line.

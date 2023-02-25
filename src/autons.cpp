@@ -1,3 +1,4 @@
+#include "autons.hpp"
 #include "main.h"
 #include "pros/misc.h"
 #include "roboto/roboto.hpp"
@@ -108,8 +109,7 @@ void flywheel_task(void *param) {
     } 
     else if (skillSpeed) {
       autoFlywheel(380);
-    } 
-    else {
+    } else {
       autoFlywheel(435);
     }
     // if (skillsBool){
