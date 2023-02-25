@@ -68,7 +68,7 @@ bool l2Engaged = false;
 bool aEngaged = false;
 bool tbhToggle = true;
 int angleOffset;
-double tbhDrive = 190.0;
+double tbhDrive = 250.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
 int weeds;
@@ -84,6 +84,10 @@ lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
 lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
 void initialize() {
   transmission.set_value(true);
+  expansion.set_value(false);
+  expansion1.set_value(false);
+  intakeLift.set_value(false);
+  actualIntakeLift.set_value(false);
   // Print our branding over your terminal :D
   lv_obj_set_size(chart, 500, 200);
   lv_obj_align(chart, nullptr, LV_ALIGN_CENTER, 0, 0);
@@ -91,7 +95,7 @@ void initialize() {
 
   // lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
 
-  lv_chart_set_range(chart, 350, 450);
+  lv_chart_set_range(chart, 450, 550);
   lv_chart_set_point_count(chart, 1000);
   // ez::print_ez_template();
 
@@ -152,7 +156,7 @@ void autoFlywheelDrive(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
 
-  double change = .25;
+  double change = .15;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   double output = flyDriveD + change * error;
@@ -284,6 +288,7 @@ void opcontrol() {
   pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT);
   pros::Motor right_wheel_middle(RIGHT_WHEEL_MIDDLE_PORT);
   while (true) {
+    actualIntakeLift.set_value(false);
     intakeLift.set_value(true);
     expansion1.set_value(false);
     expansion.set_value(false);
@@ -294,7 +299,7 @@ void opcontrol() {
     float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
     transmission.set_value(true);
 
-    autoFlywheelDrive(540);
+    autoFlywheelDrive(500);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
@@ -337,15 +342,17 @@ void opcontrol() {
     // if (buttonB) {
     //   expansionBottom.set_value(true);
     // }
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
       expansion.set_value(true);
       // expansionBottom.set_value(true);
     }
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
       expansion1.set_value(true);
       // expansionBottom.set_value(true);
     }
-
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)){
+      intakeLift.set_value(false);
+    }
     // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade

@@ -81,7 +81,7 @@ void runFlywheel(double velocity) { flywheel.move_voltage(velocity); }
 void autoFlywheel(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
-  double change = .25;
+  double change = .15;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   output += (change * error);
@@ -104,7 +104,7 @@ void flywheel_task(void *param) {
     // pros::lcd::set_text(1,std::to_string(pros::Task::notify_take(false,
     // TIMEOUT_MAX)))
     if (oneSpeed) {
-      autoFlywheel(520);
+      autoFlywheel(540);
     } 
     else if (skillSpeed) {
       autoFlywheel(380);
@@ -161,150 +161,55 @@ void rightAuton() {
   transmission.set_value(true);
   skillSpeed = false;
   skillsBool = false;
-  tbh = 235.0;
+  tbh = 280.0;
   oneSpeed = true;
   isAuton = true;
-  pros::Task fly = pros::Task(flywheel_task, (void *)1);
-  intake = -127;
-  intakeLift.set_value(false);
-  chassis.set_drive_pid(6.97056274848, DRIVE_SPEED);
-  chassis.wait_drive();
-  intakeLift.set_value(true);
-  pros::delay(700);
-  chassis.set_drive_pid(-5, DRIVE_SPEED);
-  chassis.wait_drive();
   intake = 0;
-  chassis.set_turn_pid(-20, TURN_SPEED);
+  chassis.set_drive_pid(-15, DRIVE_SPEED);
   chassis.wait_drive();
-  intake.move_absolute(50, 600);
-  pros::delay(100);
-  intake.move_absolute(50, 600);
-  pros::delay(100);
-  intake.move_absolute(50, 600);
-  chassis.set_turn_pid(-90, TURN_SPEED);
-  chassis.wait_drive();
-  intake = -127;
-  chassis.set_drive_pid(15, DRIVE_SPEED);
-  chassis.wait_drive();
-  pros::delay(100);
-  intake = 0;
-  chassis.set_turn_pid(-45, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(15, DRIVE_SPEED);
-  chassis.wait_drive();
-
-  // fire preloads
-  chassis.set_turn_pid(-25, TURN_SPEED);
-  chassis.wait_drive();
-  intake.move_absolute(50, 600);
-  pros::delay(100);
-  intake.move_absolute(50, 600);
-  pros::delay(100);
-  intake.move_absolute(50, 600);
-  intake = -127;
-  chassis.set_drive_pid(10 DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(-10, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_turn_pid(-135, TURN_SPEED);
-  chassis.wait_drive();
-  
-  chassis.set_drive_pid(25, DRIVE_SPEED);
-  chassis.wait_drive();
-  pros::delay(100);
-  intake = 0;
-  chassis.set_turn_pid(-15, TURN_SPEED);
-  chassis.wait_drive();
-  intake.move_absolute(50, 600);
-  pros::delay(100);
-  intake.move_absolute(50, 600);
-  pros::delay(100);
-  intake.move_absolute(50, 600);
-
-  // triple disc
-  chassis.set_turn_pid(-135, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(-45, DRIVE_SPEED);
-  chassis.wait_drive();
-  chassis.set_turn_pid(-45, TURN_SPEED);
+  chassis.set_turn_pid(90, TURN_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(-7, DRIVE_SPEED);
+  chassis.wait_drive();
   intake = 127;
-  pros::delay(50);
+  pros::delay(300);
   intake = 0;
 }
 
 void leftAuton() {
   // roller
-  tbh = 235.0;
+  transmission.set_value(true);
+  tbh = 280.0;
   oneSpeed = true;
   isAuton = true;
 
   pros::Task fly = pros::Task(flywheel_task, (void *)1);
-  intake = -127;
-  chassis.set_drive_pid(3, DRIVE_SPEED, true);
+  intake = 0;
+  chassis.set_drive_pid(-3, DRIVE_SPEED, true);
   chassis.wait_drive();
-
-  pros::delay(100);
   // Fire Preloads
-  chassis.set_drive_pid(-8, DRIVE_SPEED, true);
-  chassis.wait_drive();
+  intake = 127;
+  pros::delay(300);
+  intake = 0;
 
-  chassis.set_turn_pid(-22, TURN_SPEED);
+  chassis.set_swing_pid(ez::LEFT_SWING, 47, SWING_SPEED);
   chassis.wait_drive();
-  // shotBlocker.set_value(false);
-  pros::delay(700);
-  intake = 127;
-  pros::delay(160);
-  intake = 0;
-  pros::delay(800);
-  intake = 127;
-  pros::delay(160);
-  intake = 0;
-  // shotBlocker.set_value(true);
-  pros::delay(400);
-  oneSpeed = false;
-
-  // triple stack
-  chassis.set_turn_pid(-120, TURN_SPEED);
+  actualIntakeLift.set_value(false);
+  chassis.set_drive_pid(20, DRIVE_SPEED);
   chassis.wait_drive();
-  intakeLift.set_value(true);
-  chassis.set_drive_pid(18, DRIVE_SPEED);
+  intake = -127;
+  actualIntakeLift.set_value(false);
+  pros::delay(200);
+  chassis.set_drive_pid(20, DRIVE_SPEED);
   chassis.wait_drive();
-  intakeLift.set_value(false);
-  pros::delay(900);
-
-  // //Fire triple stack
-  chassis.set_turn_pid(-23, TURN_SPEED);
+  chassis.set_turn_pid(-34, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-8, DRIVE_SPEED);
+  chassis.set_drive_pid(15, DRIVE_SPEED);
   chassis.wait_drive();
-  // shotBlocker.set_value(false);
-  intake = 127;
-  pros::delay(160);
+  pros::delay(6000);
+  intake.move_absolute(100, 600);
+  pros::delay(100);
   intake = 0;
-  pros::delay(700);
-  intake = 127;
-  pros::delay(160);
-  intake = 0;
-  pros::delay(700);
-  intake = 127;
-  pros::delay(160);
-  intake = 0;
-  // shotBlocker.set_value(true);
-  // //Low goal discs
-  // chassis.set_drive_pid(10, DRIVE_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_turn_pid(10, TURN_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_drive_pid(10, DRIVE_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_turn_pid(-10, TURN_SPEED);
-  // chassis.wait_drive();
-  // intake = 127;
-  // pros::delay(850);
-  // intake = 0;
-  // fly.notify();
 }
 
 void Skills() {
