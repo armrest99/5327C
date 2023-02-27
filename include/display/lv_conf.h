@@ -15,7 +15,6 @@
 #define LV_MEM_CUSTOM                                                          \
   1 /*1: use custom malloc/free, 0: use the built-in                           \
        lv_mem_alloc/lv_mem_free*/
-#if LV_MEM_CUSTOM == 0
 #define LV_MEM_SIZE                                                            \
   (32U * 1024U)     /*Size memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
 #define LV_MEM_ATTR /*Complier prefix for big array declaration*/
@@ -24,8 +23,7 @@
 #define LV_MEM_CUSTOM_INCLUDE                                                  \
   "kapi.h"                          /*Header for the dynamic memory function*/
 #define LV_MEM_CUSTOM_ALLOC kmalloc /*Wrapper to malloc*/
-#define LV_MEM_CUSTOM_FREE kfree    /*Wrapper to free*/
-#endif                              /*LV_MEM_CUSTOM*/
+#define LV_MEM_CUSTOM_FREE kfree    /*Wrapper to free*/                            /*LV_MEM_CUSTOM*/
 #define LV_ENABLE_GC 0
 
 /*===================
