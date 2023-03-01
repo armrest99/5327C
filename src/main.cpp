@@ -6,18 +6,13 @@
 #include "display/lv_themes/lv_theme_alien.h"
 // #include <format>
 #include <string>
+#include <map>
 
 #ifndef DEBUG
 #define DEBUG
 #endif
-#define LEFT_WHEEL_FRONT_PORT 16
-#define LEFT_WHEEL_BACK_PORT 17
-#define LEFT_WHEEL_MIDDLE_PORT 18
 
-#define RIGHT_WHEEL_FRONT_PORT 13
-#define RIGHT_WHEEL_BACK_PORT 15
-#define RIGHT_WHEEL_MIDDLE_PORT 14
-#define PI 3.1415926
+
 /////
 // For instalattion, upgrading, documentations and tutorials, check out website!
 // https://ez-robotics.github.io/EZ-Template/
@@ -69,13 +64,9 @@ static  lv_res_t leftAutonVariable(lv_obj_t * btn);
 static  lv_res_t checklistVar(lv_obj_t * btn);
 static  lv_res_t chartVar(lv_obj_t * btn);
 static  lv_res_t back(lv_obj_t * btn);
-pros::Motor left_wheel_front(LEFT_WHEEL_FRONT_PORT);
-pros::Motor left_wheel_back(LEFT_WHEEL_BACK_PORT);
-pros::Motor left_wheel_middle(LEFT_WHEEL_MIDDLE_PORT);
 
-pros::Motor right_wheel_front(RIGHT_WHEEL_FRONT_PORT);
-pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT);
-pros::Motor right_wheel_middle(RIGHT_WHEEL_MIDDLE_PORT);
+
+//Needed Variables
 double temp = flywheel.get_temperature();
 double templf = left_wheel_front.get_temperature();
 double templm = left_wheel_middle.get_temperature();
@@ -107,6 +98,7 @@ double tbhDrive = 250.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
 int weeds;
+
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -151,12 +143,12 @@ void lv_tutorial_objects(void)
   
   static lv_style_t style_new;                         /*Styles can't be local variables*/
   lv_style_copy(&style_new, &lv_style_pretty);         /*Copy a built-in style as a starting point*/        /*Fully round corners*/
-  style_new.body.main_color = LV_COLOR_WHITE;          /*White main color*/
-  style_new.body.grad_color = LV_COLOR_WHITE;           /*Blue gradient color*/
+  style_new.body.main_color = LV_COLOR_BLACK;          /*White main color*/
+  style_new.body.grad_color = LV_COLOR_GREEN;           /*Blue gradient color*/
   style_new.body.shadow.color = LV_COLOR_SILVER;       /*Light gray shadow color*/
   style_new.body.shadow.width = 8;                     /*8 px shadow*/
   style_new.body.border.width = 0;                     /*2 px border width*/
-  style_new.text.color = LV_COLOR_TEAL;                 /*Red text color */
+  style_new.text.color = LV_COLOR_WHITE;                 /*Red text color */
   style_new.text.letter_space = 0.5;                    /*10 px letter space*/
   
   lv_obj_t * scr = lv_page_create(NULL, NULL);
@@ -724,6 +716,7 @@ void toggleIntake() {
  * from where it left off.
  */
 void autonomous() {
+  inertial.reset();
   chassis.reset_pid_targets();               // Resets PID targets to 0
   chassis.reset_gyro();                      // Reset gyro position to 0
   chassis.reset_drive_sensor();              // Reset drive sensors to 0

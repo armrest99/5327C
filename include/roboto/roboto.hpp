@@ -6,8 +6,14 @@
 
 extern pros::Controller controller;
 extern pros::Motor flywheel;
-extern pros::Motor flywheel2;
-extern pros::Motor indexer;
+extern pros::Motor left_wheel_back;
+extern pros::Motor left_wheel_front;
+extern pros::Motor left_wheel_middle;
+extern pros::Motor right_wheel_back;
+extern pros::Motor right_wheel_front;
+extern pros::Motor right_wheel_middle;
+extern pros::ADIEncoder left_rot;
+extern pros::ADIEncoder back_rot;
 extern pros::Motor intake;
 extern pros::ADIDigitalOut expansion;
 extern pros::ADIDigitalOut expansion1;
@@ -16,6 +22,7 @@ extern pros::ADIDigitalOut intakeLift;
 extern pros::ADIDigitalOut actualIntakeLift;
 extern pros::ADIDigitalOut transmission;
 extern pros::ADIAnalogIn sensor;
+extern pros::Imu inertial;
 extern float currentX;
 extern float currentY;
 extern float pastFwd;

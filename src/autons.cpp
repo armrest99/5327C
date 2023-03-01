@@ -7,14 +7,24 @@
 // For instalattion, upgrading, documentations and tutorials, check out website!
 // https://ez-robotics.github.io/EZ-Template/
 /////
+#define PI 3.1415926
 
-const int DRIVE_SPEED =
-    110; // This is 110/127 (around 87% of max speed).  We don't suggest making
+//Math Definitions
+
+
+#define ENC_TO_INCH (2.75*PI/36000)
+#define DEG_TO_RAD PI/180
+#define RAD_TO_DEG 180/PI
+
+//The distance from the tracker wheels to the center
+#define TRACKER_DISTANCE 2 //Unknown right now this is placeholder
+
+const int DRIVE_SPEED = 127; // This is 110/127 (around 87% of max speed).  We don't suggest making
          // this 127. If this is 127 and the robot tries to heading correct,
          // it's only correcting by making one side slower.  When this is 87%,
          // it's correcting by making one side faster and one side slower,
          // giving better heading correction.
-const int TURN_SPEED = 90;
+const int TURN_SPEED = 110;
 const int SWING_SPEED = 90;
 
 ///
@@ -55,17 +65,27 @@ const int SWING_SPEED = 90;
 //   chassis.set_pid_constants(&chassis.swingPID, 7, 0, 45, 0);
 // }
 
-// void exit_condition_defaults() {
-//   chassis.set_exit_condition(chassis.turn_exit, 100, 3, 500, 7, 500, 500);
-//   chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
-//   chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
-// }
+void exit_condition_defaults() {
+  chassis.set_exit_condition(chassis.turn_exit, 10, 1, 100, 7, 50, 500);
+  chassis.set_exit_condition(chassis.swing_exit, 10, 1, 100, 7, 50, 500);
+  chassis.set_exit_condition(chassis.drive_exit, 8, 50, 60, 150, 50, 500);
+}
 
 // void modified_exit_condition() {
 //   chassis.set_exit_condition(chassis.turn_exit, 100, 3, 500, 7, 500, 500);
 //   chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
 //   chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
 // }
+//ODOM VARIABLES
+float tare_back;
+float tare_left;
+float prev_y = 0;
+float prev_x = 0;
+float prev_angle = 0;
+//GLOBAL X
+float pos_x = 0;
+//GLOBAL Y
+float pos_y = 0;
 
 bool oneSpeed = true;
 bool skillSpeed = false;
@@ -74,9 +94,49 @@ double prev_error = 0.0;
 double output;
 bool isAuton = true;
 bool skillsBool = false;
-///
-// Drive Example
-///
+
+//Reset encoder positions
+void tare_rot(){
+	while (tare_back == 0){
+		tare_back = back_rot.get_value();
+		pros::delay(1);
+	}
+	while (tare_left == 0){
+		tare_left = left_rot.get_value();
+		pros::delay(1);
+	}
+}
+float back_pos(){
+ 	return back_rot.get_value() - tare_back;
+}
+float left_pos(){
+ 	return left_rot.get_value() - tare_left;
+}
+double getAngle(){
+	double angle = inertial.get_heading();
+  return angle;
+}
+void Pilons(){ //ODOMETRY WOOOO
+	double angle = getAngle();
+	double new_angle = angle-prev_angle;
+	//tracked values in inches
+	double current_x = left_pos();
+	double current_y = back_pos();
+	double new_local_x = (current_x-prev_x);
+	double new_local_y = (current_y-prev_y);
+	double distance = sqrt(pow(new_local_y,2)+pow(new_local_x,2));
+	//account for backwards movement
+	double changes = atan2(new_local_y,new_local_x);
+	changes = (std::isnan(changes)) ? PI/2 : changes;
+	angle +=  changes;
+	double dx = cos(angle)*distance*ENC_TO_INCH;
+	double dy = sin(angle)*distance*ENC_TO_INCH;
+	pos_x += dx;
+	pos_y += dy;
+	prev_x = current_x;
+	prev_y = current_y;
+	prev_angle = angle;
+}
 void runFlywheel(double velocity) { flywheel.move_voltage(velocity); }
 
 void autoFlywheel(double velocity) {
@@ -144,8 +204,7 @@ void flyPID(float voltage) {
   double totalError = 0;
   double lastError = voltage;
   while (error > 0) {
-    float currentVoltage =
-        (flywheel.get_voltage() + flywheel2.get_voltage()) / 2.00;
+    float currentVoltage = flywheel.get_voltage();
 
     error = voltage - currentVoltage;
     double errorDifference = lastError - error;
