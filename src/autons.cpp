@@ -137,6 +137,24 @@ void Pilons(){ //ODOMETRY WOOOO
 	prev_y = current_y;
 	prev_angle = angle;
 }
+
+void checkPos(double currentX, double currentY, double currentAngle, double targetX, double targetY, double targetAngle) {
+  if (abs(currentX - targetX) > 2 || abs(currentY-targetY) > 2) {
+    // math to get angle and distance, returns reqAngle, reqDistance
+    double reqAngle = 0;
+    double reqDistance = 0;
+    chassis.set_turn_pid(reqAngle, TURN_SPEED);
+    chassis.set_drive_pid(reqDistance, DRIVE_SPEED);
+    chassis.set_turn_pid((reqAngle-targetAngle), TURN_SPEED);
+
+    
+  } else if (abs(currentAngle - targetAngle) > 3) {
+    chassis.set_turn_pid((currentAngle-targetAngle), TURN_SPEED);
+  } else {
+    std:: cout << "correct pos";
+  }
+}
+
 void runFlywheel(double velocity) { flywheel.move_voltage(velocity); }
 
 void autoFlywheel(double velocity) {
