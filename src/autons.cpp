@@ -137,7 +137,48 @@ void Pilons(){ //ODOMETRY WOOOO
 	prev_y = current_y;
 	prev_angle = angle;
 }
+void rammusete(double targetX, double targetY, double targetAngle){ //ramsete controller motion algorithm
+  bool stop = false;
+  while (!stop){
+    double errorX = (targetX - pos_x); //gives us global error
+    double errorY = (targetY - pos_y);
+    double errorA = (targetAngle - inertial.get_heading());
+    double e_x = ((cos(inertial.get_heading())*errorX)+(sin(inertial.get_heading())*errorY)); //gives us the robot's local error
+    double e_y = ((-sin(inertial.get_heading())*errorX)+(cos(inertial.get_heading())*errorY));
 
+    double b = 0.1; //Proportional constant, larger value will make the controller more aggressive
+    double damp = 0.05; //similar to the D constant for a PID controller
+    double linVelo = (0.02 * e_x); //Linear Velocity
+    double angVelo = (0.02 * errorA); //Angular Velocity
+
+    double gain = 2 * damp * sqrt(pow(angVelo,2)+b*pow(linVelo,2)); //Calculates the gain value for the controller
+
+    //Movement Speeds
+    double fSpeed = (linVelo * cos(errorA) + gain * e_x);
+    double angSpeed = (angVelo + gain * errorA + (b * linVelo * sin(errorA) * e_y)/errorA);
+    double linMotorVelo = fSpeed / (4 * PI);
+    double genSpeed = linMotorVelo + angSpeed;
+    //Movement Commands
+    left_wheel_front.move(genSpeed);
+    left_wheel_middle.move(genSpeed);
+    left_wheel_back.move(genSpeed);
+
+    right_wheel_front.move(genSpeed);
+    right_wheel_middle.move(genSpeed);
+    right_wheel_back.move(genSpeed);
+
+    if(right_wheel_middle.is_stopped() && left_wheel_middle.is_stopped()){
+      stop = true;
+    }
+  }
+  left_wheel_front.move(0);
+  left_wheel_middle.move(0);
+  left_wheel_back.move(0);
+
+  right_wheel_front.move(0);
+  right_wheel_middle.move(0);
+  right_wheel_back.move(0);
+}
 void checkPos(double currentX, double currentY, double currentAngle, double targetX, double targetY, double targetAngle) {
   if (abs(currentX - targetX) > 2 || abs(currentY-targetY) > 2) {
     // math to get angle and distance, returns reqAngle, reqDistance
