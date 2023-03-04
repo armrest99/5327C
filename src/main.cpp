@@ -2,6 +2,7 @@
 #include "autons.hpp"
 #include "display/lv_themes/lv_theme_alien.h"
 #include "display/lvgl.h"
+#include "lvgl.hpp"
 #include "pros/apix.h"
 #include "roboto/roboto.hpp"
 #include <map>
@@ -63,10 +64,6 @@ Drive chassis(
     // 3 Wire Port Expander Smart Port
     // ,1
 );
-static lv_res_t leftAutonVariable(lv_obj_t *btn);
-static lv_res_t checklistVar(lv_obj_t *btn);
-static lv_res_t chartVar(lv_obj_t *btn);
-static lv_res_t back(lv_obj_t *btn);
 
 // Needed Variables
 int flySpeed = 0;
@@ -84,6 +81,8 @@ double tbhDrive = 250.0;
 double prev_errorDrive = 0.0;
 double flyDriveD = 0.0;
 
+std::vector<lv_obj_t *> charts;
+std::vector<lv_chart_series_t *> series;
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -91,388 +90,28 @@ double flyDriveD = 0.0;
  * to keep execution time for this mode under a few seconds.
  */
 
-std::vector<lv_obj_t *> charts;
-std::vector<lv_chart_series_t *> series;
-for (int i = 0; i < 8; i++) {
-  lv_obj_t *chart = lv_chart_create(lv_scr_act, NULL);
-  lv_obj_set_size(chart, 100, 100);
-  lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
-  lv_chart_set_range(chart, 1, 600);
-  lv_chart_set_point_count(chart, 100);
-  lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
-  lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
+std::vector temperatures = {intake.get_temperature(),
+                            flywheel.get_temperature(),
+                            left_wheel_front.get_temperature(),
+                            left_wheel_middle.get_temperature(),
+                            left_wheel_back.get_temperature(),
+                            right_wheel_front.get_temperature(),
+                            right_wheel_middle.get_temperature(),
+                            right_wheel_back.get_temperature()};
 
-  lv_obj_align(chart, label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
-
-  charts.push_back(chart);
-  series.push_back(series1);
-  series.push_back(series2);
-}
-
-lv_chart_series_t *series9 = lv_chart_add_series(chart4, LV_COLOR_BLUE);
-lv_chart_series_t *series10 = lv_chart_add_series(chart4, LV_COLOR_RED);
-
-const char *ConvertDoubleToString(double value) {
-  std::stringstream ss;
-  ss << value;
-  const char *str = ss.str().c_str();
-  return str;
-}
-
-void home_screen(void) {
-
-  static lv_style_t style_new; /*Styles can't be local variables*/
-  lv_style_copy(&style_new, &lv_style_pretty);
-  /*Copy a built-in style as a starting point*/  /*Fully round corners*/
-  style_new.body.main_color = LV_COLOR_BLACK;    /*White main color*/
-  style_new.body.grad_color = LV_COLOR_GREEN;    /*Blue gradient color*/
-  style_new.body.shadow.color = LV_COLOR_SILVER; /*Light gray shadow color*/
-  style_new.body.shadow.width = 8;               /*8 px shadow*/
-  style_new.body.border.width = 0;               /*2 px border width*/
-  style_new.text.color = LV_COLOR_WHITE;         /*Red text color */
-  style_new.text.letter_space = 0.5;             /*10 px letter space*/
-
-  lv_obj_t *scr = lv_page_create(NULL, NULL);
-  lv_scr_load(scr);
-  lv_obj_set_style(scr, &style_new);
-
-  std::vector<std::string> temperatureLabels = {"Intake (1)",
-                                                "Flywheel (6)",
-                                                "Left Wheel Front (16)",
-                                                "Left Wheel Middle (17)",
-                                                "Left Wheel Back (18)",
-                                                "Right Wheel Front (13)",
-                                                "Right Wheel Middle (14)",
-                                                "Right Wheel Back (15)"};
-
-  // Temperature label sections
-  std::vector temperatures = {intake.get_temperature(),
-                              flywheel.get_temperature(),
-                              left_wheel_front.get_temperature(),
-                              left_wheel_middle.get_temperature(),
-                              left_wheel_back.get_temperature(),
-                              right_wheel_front.get_temperature(),
-                              right_wheel_middle.get_temperature(),
-                              right_wheel_back.get_temperature()};
-
-  std::array<double, 6> voltages = {
-      left_wheel_front.get_temperature(),   left_wheel_middle.get_temperature(),
-      left_wheel_back.get_temperature(),    right_wheel_front.get_temperature(),
-      right_wheel_middle.get_temperature(), right_wheel_back.get_temperature()};
-
-  lv_obj_t *temperatureHeaderLabel = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(temperatureHeaderLabel, "Temperature");
-  lv_obj_set_x(temperatureHeaderLabel, 0);
-  lv_obj_set_y(temperatureHeaderLabel, 260);
-  // create temperature labels
-  for (int i = 0; i < temperatureLabels.size(); i++) {
-    const char *label_c_string = temperatureLabels[i].c_str();
-    std::size_t y_coord = 280 + i * 20;
-    lv_obj_t *mechanism_label = lv_label_create(lv_scr_act(), NULL);
-    lv_label_set_text(mechanism_label, label_c_string);
-    lv_obj_set_style(mechanism_label, &style_new);
-    lv_obj_set_x(mechanism_label, 220);
-    lv_obj_set_y(mechanism_label, y_coord);
-
-    lv_obj_t *temperature_label = lv_label_create(lv_scr_act(), NULL);
-    double temperature = temperatures.at(i);
-    lv_label_set_text(temperature_label, ConvertDoubleToString(temperature));
-  }
-
-  std::vector<std::string> autonRoutineNames = {"Left Auton 1", "Solo AWP",
-                                                "Left Auton 2", "Right Auton 1",
-                                                "Right Auton 2"};
-  for (int i = 0; i < autonRoutineNames.size(); i++) {
-    const char *label_c_string = autonRoutineNames.at(i).c_str();
-    lv_obj_t *button = lv_btn_create(lv_scr_act(), NULL);
-    lv_obj_set_style(button, &style_new);
-    lv_btn_set_action(button, LV_BTN_ACTION_CLICK, leftAutonVariable);
-
-    // set x and y coordinates
-
-    lv_obj_t *label = lv_label_create(button, NULL);
-    lv_label_set_text(label, label_c_string);
-  }
-
-  lv_obj_t *btn6 = lv_btn_create(
-      lv_scr_act(), NULL); /*Create a button on the currently loaded screen*/
-  lv_btn_set_action(
-      btn6, LV_BTN_ACTION_CLICK,
-      checklistVar); /*Set function to be called when the button is released*/
-  lv_obj_set_y(btn6, 150);
-  lv_obj_set_x(btn6, 170);
-  lv_obj_set_style(btn6, &style_new);
-  label = lv_label_create(btn6, NULL);
-  lv_label_set_text(label, "CHECKLIST");
-  lv_obj_t *btn7 = lv_btn_create(
-      lv_scr_act(), NULL); /*Create a button on the currently loaded screen*/
-  lv_btn_set_action(
-      btn7, LV_BTN_ACTION_CLICK,
-      chartVar); /*Set function to be called when the button is released*/
-  lv_obj_set_y(btn7, 260);
-  lv_obj_set_x(btn7, 330);
-  lv_obj_set_style(btn7, &style_new);
-  label = lv_label_create(btn7, NULL);
-  lv_btn_set_fit(btn7, true, false);
-  lv_label_set_text(label, "Watt and RPM Charts");
-  lv_obj_set_size(btn7, 100, 180);
-  lv_obj_set_size(label, 20, 20);
-}
-
-void create_styles(void) {
-  static lv_style_t style_new; /*Styles can't be local variables*/
-  /*Copy a built-in style as a starting point*/  /*Fully round corners*/
-  style_new.body.main_color = LV_COLOR_WHITE;    /*White main color*/
-  style_new.body.grad_color = LV_COLOR_WHITE;    /*Blue gradient color*/
-  style_new.body.shadow.color = LV_COLOR_SILVER; /*Light gray shadow color*/
-  style_new.body.shadow.width = 8;               /*8 px shadow*/
-  style_new.body.border.width = 0;               /*2 px border width*/
-  style_new.text.color = LV_COLOR_TEAL;          /*Red text color */
-  style_new.text.letter_space = 0;
-
-  static lv_style_t lv_style_pretty;
-  style_new.body.main_color = LV_COLOR_BLACK;    /*White main color*/
-  style_new.body.grad_color = LV_COLOR_BLUE;     /*Blue gradient color*/
-  style_new.body.shadow.color = LV_COLOR_SILVER; /*Light gray shadow color*/
-  style_new.body.shadow.width = 8;               /*8 px shadow*/
-  style_new.body.border.width = 0;               /*2 px border width*/
-  style_new.text.color = LV_COLOR_WHITE;         /*Red text color */
-  style_new.text.letter_space = 1;
-
-  // style_new.body.main_color = LV_COLOR_BLACK;    /*White main color*/
-  // style_new.body.grad_color = LV_COLOR_RED;      /*Blue gradient color*/
-  // style_new.body.shadow.color = LV_COLOR_SILVER; /*Light gray shadow color*/
-  // style_new.body.shadow.width = 8;               /*8 px shadow*/
-  // style_new.body.border.width = 0;               /*2 px border width*/
-  // style_new.text.color = LV_COLOR_WHITE;         /*Red text color */
-  // style_new.text.letter_space = 1;
-}
-
-void lv_checklist(void) {
-  lv_obj_t *scr = lv_page_create(NULL, NULL);
-  lv_scr_load(scr);
-  lv_obj_set_style(scr, &style_new);
-  lv_obj_t *label = lv_label_create(NULL, NULL);
-  lv_obj_t *btn3 = lv_btn_create(lv_scr_act(), NULL);
-  lv_btn_set_action(btn3, LV_BTN_ACTION_CLICK,
-                    leftAutonVariable); /*Set function to be called when the
-                                           button is released*/
-  lv_obj_set_y(btn3, 20);
-  lv_obj_set_x(btn3, 10);
-  lv_obj_set_style(btn3, &lv_style_pretty);
-  lv_obj_set_size(btn3, 200, 30);
-  label = lv_label_create(btn3, NULL);
-  lv_label_set_text(label, "1. Pneumatics asf");
-  lv_obj_t *btn = lv_btn_create(lv_scr_act(), NULL);
-  lv_btn_set_action(btn, LV_BTN_ACTION_CLICK,
-                    leftAutonVariable); /*Set function to be called when the
-                                           button is released*/
-  lv_obj_set_style(btn, &lv_style_pretty);
-  lv_obj_set_size(btn, 200, 30);
-  label = lv_label_create(btn, NULL);
-  lv_label_set_text(label, "2. Wires asf");
-  lv_obj_align(btn, btn3, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 20);
-  lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
-  lv_btn_set_action(
-      btn1, LV_BTN_ACTION_CLICK,
-      back); /*Set function to be called when the button is released*/
-  lv_obj_set_style(btn1, &lv_style_pretty);
-  lv_obj_set_size(btn1, 200, 30);
-  label = lv_label_create(btn1, NULL);
-  lv_label_set_text(label, "Back");
-  lv_obj_set_x(btn1, 330);
-  lv_btn_set_fit(btn1, true, true);
-}
-
-void lv_charts(void) {
-  lv_obj_t *label1 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label1, "Flywheel:");
-  lv_obj_set_y(label1, 50);
-  lv_obj_set_style(label1, &style_new);
-  lv_obj_t *chart = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart, 100, 100);
-  lv_obj_align(chart, label1, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
-  lv_chart_set_type(chart, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series1 = lv_chart_add_series(chart, LV_COLOR_BLUE);
-  lv_chart_series_t *series2 = lv_chart_add_series(chart, LV_COLOR_RED);
-
-  lv_chart_set_range(chart, 1, 600);
-  lv_chart_set_point_count(chart, 100);
-  lv_obj_t *btn1 = lv_btn_create(lv_scr_act(), NULL);
-  lv_btn_set_action(
-      btn1, LV_BTN_ACTION_CLICK,
-      back); /*Set function to be called when the button is released*/
-  lv_obj_set_style(btn1, &lv_style_pretty);
-  lv_obj_set_size(btn1, 200, 30);
-  label1 = lv_label_create(btn1, NULL);
-  lv_label_set_text(label1, "Back");
-  lv_obj_set_x(btn1, 330);
-  lv_btn_set_fit(btn1, true, true);
-  lv_obj_t *label2 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label2, "Left Front:");
-  lv_obj_set_y(label2, 70);
-  lv_obj_set_x(label2, 130);
-  lv_obj_set_style(label2, &style_new);
-  lv_obj_t *chart1 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart1, 100, 100);
-  lv_obj_align(chart1, label2, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 0);
-  lv_chart_set_type(chart1, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series3 = lv_chart_add_series(chart1, LV_COLOR_BLUE);
-  lv_chart_series_t *series4 = lv_chart_add_series(chart1, LV_COLOR_RED);
-
-  lv_chart_set_range(chart1, 1, 600);
-  lv_chart_set_point_count(chart1, 100);
-
-  lv_obj_t *label3 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label3, "Left Middle:");
-  lv_obj_set_y(label3, 70);
-  lv_obj_set_x(label3, 240);
-  lv_obj_set_style(label3, &style_new);
-  lv_obj_t *chart2 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart2, 100, 100);
-  lv_obj_align(chart2, label3, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 0);
-  lv_chart_set_type(chart2, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series5 = lv_chart_add_series(chart2, LV_COLOR_BLUE);
-  lv_chart_series_t *series6 = lv_chart_add_series(chart2, LV_COLOR_RED);
-
-  lv_chart_set_range(chart2, 1, 600);
-  lv_chart_set_point_count(chart2, 100);
-
-  lv_obj_t *label4 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label4, "Left Back:");
-  lv_obj_set_y(label4, 70);
-  lv_obj_set_x(label4, 370);
-  lv_obj_set_style(label4, &style_new);
-  lv_obj_t *chart3 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart3, 100, 100);
-  lv_obj_align(chart3, label4, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 0);
-  lv_chart_set_type(chart3, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series7 = lv_chart_add_series(chart3, LV_COLOR_BLUE);
-  lv_chart_series_t *series8 = lv_chart_add_series(chart3, LV_COLOR_RED);
-
-  lv_chart_set_range(chart3, 1, 600);
-  lv_chart_set_point_count(chart3, 100);
-
-  lv_obj_t *label5 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label5, "Intake:");
-  lv_obj_set_y(label5, 200);
-  lv_obj_set_x(label5, 0);
-  lv_obj_set_style(label5, &style_new);
-  lv_obj_t *chart4 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart4, 100, 100);
-  lv_obj_align(chart4, label5, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
-  lv_chart_set_type(chart4, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series9 = lv_chart_add_series(chart4, LV_COLOR_BLUE);
-  lv_chart_series_t *series10 = lv_chart_add_series(chart4, LV_COLOR_RED);
-
-  lv_chart_set_range(chart4, 1, 600);
-  lv_chart_set_point_count(chart4, 100);
-
-  lv_obj_t *label6 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label6, "Right Front:");
-  lv_obj_set_y(label6, 200);
-  lv_obj_set_x(label6, 130);
-  lv_obj_set_style(label6, &style_new);
-  lv_obj_t *chart5 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart5, 100, 100);
-  lv_obj_align(chart5, label6, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 0);
-  lv_chart_set_type(chart5, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series11 = lv_chart_add_series(chart5, LV_COLOR_BLUE);
-  lv_chart_series_t *series12 = lv_chart_add_series(chart5, LV_COLOR_RED);
-
-  lv_chart_set_range(chart5, 1, 600);
-  lv_chart_set_point_count(chart5, 100);
-
-  lv_obj_t *label7 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label7, "Right Middle:");
-  lv_obj_set_y(label7, 200);
-  lv_obj_set_x(label7, 240);
-  lv_obj_set_style(label7, &style_new);
-  lv_obj_t *chart6 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart6, 100, 100);
-  lv_obj_align(chart6, label7, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 0);
-  lv_chart_set_type(chart6, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series13 = lv_chart_add_series(chart6, LV_COLOR_BLUE);
-  lv_chart_series_t *series14 = lv_chart_add_series(chart6, LV_COLOR_RED);
-
-  lv_chart_set_range(chart6, 1, 600);
-  lv_chart_set_point_count(chart6, 100);
-
-  lv_obj_t *label8 = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label8, "Right Back:");
-  lv_obj_set_y(label8, 200);
-  lv_obj_set_x(label8, 370);
-  lv_obj_set_style(label8, &style_new);
-  lv_obj_t *chart7 = lv_chart_create(lv_scr_act(), NULL); /*Create the chart*/
-  // lv_obj_align(chart, slider, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 50); /*Align below
-  // the slider*/                                           /*Set the line
-  // width*/
-
-  /*Add a RED data series and set some points*/
-  lv_obj_set_size(chart7, 100, 100);
-  lv_obj_align(chart7, label8, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 0);
-  lv_chart_set_type(chart7, LV_CHART_TYPE_LINE);
-
-  lv_chart_series_t *series15 = lv_chart_add_series(chart7, LV_COLOR_BLUE);
-  lv_chart_series_t *series16 = lv_chart_add_series(chart7, LV_COLOR_RED);
-
-  lv_chart_set_range(chart7, 1, 600);
-  lv_chart_set_point_count(chart7, 100);
-}
-void lv_charts1(void) {
-  lv_obj_t *scr = lv_page_create(NULL, NULL);
-  lv_scr_load(scr);
-  lv_obj_set_style(scr, &style_new);
-  lv_obj_t *label = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(label, "Wattage");
-  // "RPM"
-  lv_obj_set_y(label, 0);
-}
+std::array<double, 6> voltages = {
+    left_wheel_front.get_temperature(),   left_wheel_middle.get_temperature(),
+    left_wheel_back.get_temperature(),    right_wheel_front.get_temperature(),
+    right_wheel_middle.get_temperature(), right_wheel_back.get_temperature()};
 
 void initialize() {
-  home_screen();
+  std::vector<std::string> chartNames = {
+      "Flywheel",           "Left Front Wheel", "Left Middle Wheel",
+      "Left Back Wheel",    "Intake",           "Right Front Wheel",
+      "Right Middle Wheel", "Right Back Wheel"};
+  initializeChartsSeries(charts, chartNames, series);
+  lv_obj_t *homePage = createHomeScreen();
+  create_checklist();
   lv_init();
 
   transmission.set_value(true);
@@ -544,19 +183,6 @@ void disabled() {
 void competition_initialize() { initialize(); }
 void runFlywheelDrive(double velocity) { flywheel.move_voltage(velocity); }
 
-void update_graph(std::vector<double> stats, std::vector<lv_obj_t *> charts,
-                  std::vector<lv_obj_t *> series) {
-  // currently assumes 2 series per chart
-  int current_series = 0;
-  for (int i = 0; i < charts.size(); i++) {
-    lv_chart_set_next(charts.at(i), series.at(current_series),
-                      stats.at(current_series));
-    current_series += 1;
-    lv_chart_set_next(charts.at(i), series.at(current_series),
-                      stats.at(current_series));
-    current_series += 1;
-  }
-}
 void autoFlywheelDrive(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
@@ -795,18 +421,4 @@ void opcontrol() {
     pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!
                                        // Keep this ez::util::DELAY_TIME
   }
-}
-static lv_res_t leftAutonVariable(lv_obj_t *btn) { return LV_RES_OK; }
-static lv_res_t checklistVar(lv_obj_t *btn) {
-  lv_checklist();
-  return LV_RES_OK;
-}
-static lv_res_t chartVar(lv_obj_t *btn) {
-  lv_charts1();
-  lv_charts();
-  return LV_RES_OK;
-}
-static lv_res_t back(lv_obj_t *btn) {
-  lv_tutorial_objects();
-  return LV_RES_OK;
 }

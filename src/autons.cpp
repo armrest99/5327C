@@ -9,17 +9,17 @@
 /////
 #define PI 3.1415926
 
-//Math Definitions
+// Math Definitions
 
+#define ENC_TO_INCH (2.75 * PI / 36000)
+#define DEG_TO_RAD PI / 180
+#define RAD_TO_DEG 180 / PI
 
-#define ENC_TO_INCH (2.75*PI/36000)
-#define DEG_TO_RAD PI/180
-#define RAD_TO_DEG 180/PI
+// The distance from the tracker wheels to the center
+#define TRACKER_DISTANCE 2 // Unknown right now this is placeholder
 
-//The distance from the tracker wheels to the center
-#define TRACKER_DISTANCE 2 //Unknown right now this is placeholder
-
-const int DRIVE_SPEED = 127; // This is 110/127 (around 87% of max speed).  We don't suggest making
+const int DRIVE_SPEED =
+    127; // This is 110/127 (around 87% of max speed).  We don't suggest making
          // this 127. If this is 127 and the robot tries to heading correct,
          // it's only correcting by making one side slower.  When this is 87%,
          // it's correcting by making one side faster and one side slower,
@@ -76,15 +76,15 @@ void exit_condition_defaults() {
 //   chassis.set_exit_condition(chassis.swing_exit, 100, 3, 500, 7, 500, 500);
 //   chassis.set_exit_condition(chassis.drive_exit, 80, 50, 300, 150, 500, 500);
 // }
-//ODOM VARIABLES
+// ODOM VARIABLES
 float tare_back;
 float tare_left;
 float prev_y = 0;
 float prev_x = 0;
 float prev_angle = 0;
-//GLOBAL X
+// GLOBAL X
 float pos_x = 0;
-//GLOBAL Y
+// GLOBAL Y
 float pos_y = 0;
 
 bool oneSpeed = true;
@@ -95,70 +95,77 @@ double output;
 bool isAuton = true;
 bool skillsBool = false;
 
-//Reset encoder positions
-void tare_rot(){
-	while (tare_back == 0){
-		tare_back = back_rot.get_value();
-		pros::delay(1);
-	}
-	while (tare_left == 0){
-		tare_left = left_rot.get_value();
-		pros::delay(1);
-	}
+// Reset encoder positions
+void tare_rot() {
+  while (tare_back == 0) {
+    tare_back = back_rot.get_value();
+    pros::delay(1);
+  }
+  while (tare_left == 0) {
+    tare_left = left_rot.get_value();
+    pros::delay(1);
+  }
 }
-float back_pos(){
- 	return back_rot.get_value() - tare_back;
-}
-float left_pos(){
- 	return left_rot.get_value() - tare_left;
-}
-double getAngle(){
-	double angle = inertial.get_heading();
+float back_pos() { return back_rot.get_value() - tare_back; }
+float left_pos() { return left_rot.get_value() - tare_left; }
+double getAngle() {
+  double angle = inertial.get_heading();
   return angle;
 }
-void Pilons(){ //ODOMETRY WOOOO
-	double angle = getAngle();
-	double new_angle = angle-prev_angle;
-	//tracked values in inches
-	double current_x = left_pos();
-	double current_y = back_pos();
-	double new_local_x = (current_x-prev_x);
-	double new_local_y = (current_y-prev_y);
-	double distance = sqrt(pow(new_local_y,2)+pow(new_local_x,2));
-	//account for backwards movement
-	double changes = atan2(new_local_y,new_local_x);
-	changes = (std::isnan(changes)) ? PI/2 : changes;
-	angle +=  changes;
-	double dx = cos(angle)*distance*ENC_TO_INCH;
-	double dy = sin(angle)*distance*ENC_TO_INCH;
-	pos_x += dx;
-	pos_y += dy;
-	prev_x = current_x;
-	prev_y = current_y;
-	prev_angle = angle;
+void Pilons() { // ODOMETRY WOOOO
+  double angle = getAngle();
+  double new_angle = angle - prev_angle;
+  // tracked values in inches
+  double current_x = left_pos();
+  double current_y = back_pos();
+  double new_local_x = (current_x - prev_x);
+  double new_local_y = (current_y - prev_y);
+  double distance = sqrt(pow(new_local_y, 2) + pow(new_local_x, 2));
+  // account for backwards movement
+  double changes = atan2(new_local_y, new_local_x);
+  changes = (std::isnan(changes)) ? PI / 2 : changes;
+  angle += changes;
+  double dx = cos(angle) * distance * ENC_TO_INCH;
+  double dy = sin(angle) * distance * ENC_TO_INCH;
+  pos_x += dx;
+  pos_y += dy;
+  prev_x = current_x;
+  prev_y = current_y;
+  prev_angle = angle;
 }
-void rammusete(double targetX, double targetY, double targetAngle){ //ramsete controller motion algorithm
+void rammusete(double targetX, double targetY,
+               double targetAngle) { // ramsete controller motion algorithm
   bool stop = false;
-  while (!stop){
-    double errorX = (targetX - pos_x); //gives us global error
+  while (!stop) {
+    double errorX = (targetX - pos_x); // gives us global error
     double errorY = (targetY - pos_y);
     double errorA = (targetAngle - inertial.get_heading());
-    double e_x = ((cos(inertial.get_heading())*errorX)+(sin(inertial.get_heading())*errorY)); //gives us the robot's local error
-    double e_y = ((-sin(inertial.get_heading())*errorX)+(cos(inertial.get_heading())*errorY));
+    double e_x = ((cos(inertial.get_heading()) * errorX) +
+                  (sin(inertial.get_heading()) *
+                   errorY)); // gives us the robot's local error
+    double e_y = ((-sin(inertial.get_heading()) * errorX) +
+                  (cos(inertial.get_heading()) * errorY));
 
-    double b = 0.1; //Proportional constant, larger value will make the controller more aggressive
-    double damp = 0.05; //similar to the D constant for a PID controller
-    double linVelo = (0.02 * e_x); //Linear Velocity
-    double angVelo = (0.02 * errorA); //Angular Velocity
+    double b = 0.1;     // Proportional constant, larger value will make the
+                        // controller more aggressive
+    double damp = 0.05; // similar to the D constant for a PID controller
+    double linVelo = (0.02 * e_x);    // Linear Velocity
+    double angVelo = (0.02 * errorA); // Angular Velocity
 
-    double gain = 2 * damp * sqrt(pow(angVelo,2)+b*pow(linVelo,2)); //Calculates the gain value for the controller
+    double gain =
+        2 * damp *
+        sqrt(pow(angVelo, 2) +
+             b * pow(linVelo,
+                     2)); // Calculates the gain value for the controller
 
-    //Movement Speeds
+    // Movement Speeds
     double fSpeed = (linVelo * cos(errorA) + gain * e_x);
-    double angSpeed = (angVelo + gain * errorA + (b * linVelo * sin(errorA) * e_y)/errorA);
+    double angSpeed =
+        (angVelo + gain * errorA + (b * linVelo * sin(errorA) * e_y) / errorA);
+    // wheel circumference is 4 * pi
     double linMotorVelo = fSpeed / (4 * PI);
     double genSpeed = linMotorVelo + angSpeed;
-    //Movement Commands
+    // Movement Commands
     left_wheel_front.move(genSpeed);
     left_wheel_middle.move(genSpeed);
     left_wheel_back.move(genSpeed);
@@ -167,7 +174,7 @@ void rammusete(double targetX, double targetY, double targetAngle){ //ramsete co
     right_wheel_middle.move(genSpeed);
     right_wheel_back.move(genSpeed);
 
-    if(right_wheel_middle.is_stopped() && left_wheel_middle.is_stopped()){
+    if (right_wheel_middle.is_stopped() && left_wheel_middle.is_stopped()) {
       stop = true;
     }
   }
@@ -179,20 +186,20 @@ void rammusete(double targetX, double targetY, double targetAngle){ //ramsete co
   right_wheel_middle.move(0);
   right_wheel_back.move(0);
 }
-void checkPos(double currentX, double currentY, double currentAngle, double targetX, double targetY, double targetAngle) {
-  if (abs(currentX - targetX) > 2 || abs(currentY-targetY) > 2) {
+void checkPos(double currentX, double currentY, double currentAngle,
+              double targetX, double targetY, double targetAngle) {
+  if (abs(currentX - targetX) > 2 || abs(currentY - targetY) > 2) {
     // math to get angle and distance, returns reqAngle, reqDistance
     double reqAngle = 0;
     double reqDistance = 0;
     chassis.set_turn_pid(reqAngle, TURN_SPEED);
     chassis.set_drive_pid(reqDistance, DRIVE_SPEED);
-    chassis.set_turn_pid((reqAngle-targetAngle), TURN_SPEED);
+    chassis.set_turn_pid((reqAngle - targetAngle), TURN_SPEED);
 
-    
   } else if (abs(currentAngle - targetAngle) > 3) {
-    chassis.set_turn_pid((currentAngle-targetAngle), TURN_SPEED);
+    chassis.set_turn_pid((currentAngle - targetAngle), TURN_SPEED);
   } else {
-    std:: cout << "correct pos";
+    std::cout << "correct pos";
   }
 }
 
@@ -225,8 +232,7 @@ void flywheel_task(void *param) {
     // TIMEOUT_MAX)))
     if (oneSpeed) {
       autoFlywheel(540);
-    } 
-    else if (skillSpeed) {
+    } else if (skillSpeed) {
       autoFlywheel(380);
     } else {
       autoFlywheel(435);
