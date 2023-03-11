@@ -24,16 +24,17 @@ pros::Motor right_wheel_front(RIGHT_WHEEL_FRONT_PORT);
 pros::Motor right_wheel_back(RIGHT_WHEEL_BACK_PORT);
 pros::Motor right_wheel_middle(RIGHT_WHEEL_MIDDLE_PORT);
 pros::Imu inertial(3);
+pros::Optical optical_sensor(4);
 pros::ADIEncoder left_rot(LEFT_ROT_PORT, LEFT_ROT_PORT2, false);
 pros::ADIEncoder back_rot(BACK_ROT_PORT, BACK_ROT_PORT2, false);
-pros::Motor flywheel(6, pros::E_MOTOR_GEARSET_06, 0,
+pros::Motor flywheel(6, pros::E_MOTOR_GEARSET_06, 1,
                      pros::E_MOTOR_ENCODER_COUNTS);
-pros::Motor intake(1, pros::E_MOTOR_GEARSET_06, 0,
+pros::Motor intake(20, pros::E_MOTOR_GEARSET_06, 0,
                    pros::E_MOTOR_ENCODER_COUNTS);
 pros::ADIDigitalOut expansion( {{ 2, 'a'}});
 pros::ADIDigitalOut expansion1( {{ 2, 'h'}});
 // pros::ADIDigitalOut expansionBottom('A', false);
-pros::ADIDigitalOut intakeLift( {{ 2, 'g'}});
+pros::ADIDigitalOut angleChanger( {{ 2, 'g'}});
 pros::ADIDigitalOut actualIntakeLift({{2, 'd'}});
 pros::ADIDigitalOut transmission( {{ 2, 'c'}});
 pros::ADIAnalogIn sensor ('D');

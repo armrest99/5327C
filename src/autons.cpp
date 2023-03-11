@@ -201,7 +201,7 @@ void runFlywheel(double velocity) { flywheel.move_voltage(velocity); }
 void autoFlywheel(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
-  double change = .15;
+  double change = .12;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   output += (change * error);
@@ -227,23 +227,24 @@ void flywheel_task(void *param) {
       autoFlywheel(540);
     } 
     else if (skillSpeed) {
-      autoFlywheel(380);
+      autoFlywheel(420);
     } else {
       autoFlywheel(435);
     }
     // if (skillsBool){
-    //   optical_sensor.set_led_pwm(100);
-    //   if (optical_sensor.get_hue() > 210){
-    //   intake.move_velocity(0);
-    //   }
-    //   else {
-    //   intake.move_velocity(-420);
-    //   }
+    optical_sensor.set_led_pwm(100);
+    //for red rollers
+    if (optical_sensor.get_hue() < 20){
+    intake.move_velocity(0);
+    }
+    //for blue rollers
+    // if(optical_sensor.get_hue() > 210){
+    //   intake .move_velocity (0)
     // }
+  }
 
     // autoFlywheel(v);
     pros::delay(ez::util::DELAY_TIME);
-  }
 }
 ///
 // Combining Turn + Drive
@@ -332,205 +333,172 @@ void leftAuton() {
 
 void Skills() {
   skillsBool = true;
-  tbh = 190.0;
+  tbh = 210.0;
   oneSpeed = false;
   skillSpeed = true;
+  angleChanger.set_value(false);
   pros::Task fly = pros::Task(flywheel_task, (void *)1);
-  chassis.set_drive_pid(3, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-3, DRIVE_SPEED, true);
   chassis.wait_drive();
-  pros::delay(250);
+  intake = -127;
+  pros::delay(400);
+  intake = 0;
   // Fire Preloads
-  chassis.set_drive_pid(-5, DRIVE_SPEED, true);
+  chassis.set_drive_pid(5, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_turn_pid(120, TURN_SPEED);
+  intake = -127;
+  chassis.set_turn_pid(-60, TURN_SPEED);
   chassis.wait_drive();
   chassis.set_drive_pid(15, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_swing_pid(ez::RIGHT_SWING, 90, TURN_SPEED);
+  chassis.set_turn_pid(90, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(11.5, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-11.5, DRIVE_SPEED, true);
   chassis.wait_drive();
-  pros::delay(200);
-  chassis.set_swing_pid(ez::LEFT_SWING, 0, TURN_SPEED);
+  pros::delay(400);
+  intake = 0;
+  chassis.set_swing_pid(ez::RIGHT_SWING, 0, SWING_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(-47, DRIVE_SPEED, true);
+  chassis.set_drive_pid(47, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(1200);
-  intake = 0;
-  // shotBlocker.set_value(true);
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
   // intake and shoot low goal
-  // chassis.set_turn_pid(-90, TURN_SPEED);
-  // chassis.wait_drive();
-  // chassis.set_drive_pid(25, 90, true);
-  // chassis.wait_drive();
-  // chassis.set_drive_pid(-25, DRIVE_SPEED, true);
-  // chassis.wait_drive();
-  // chassis.set_turn_pid(0, TURN_SPEED);
-  // chassis.wait_drive();
-  // intake = 80;
-  // pros::delay(1050);
-  // intake = 0;
-  // intake and shoot 3 disc in line
+  chassis.set_swing_pid(ez::LEFT_SWING, 90, SWING_SPEED);
+  chassis.wait_drive();
   chassis.set_drive_pid(34, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_turn_pid(-129.5, TURN_SPEED);
+  chassis.set_drive_pid(-34, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_drive_pid(56, 100, true);
+  chassis.set_swing_pid(ez::LEFT_SWING, 0, SWING_SPEED);
   chassis.wait_drive();
-  chassis.set_turn_pid(-46, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(7, DRIVE_SPEED, true);
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
+  chassis.set_drive_pid(-24, DRIVE_SPEED, true);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(400);
-  intake = 0;
-  chassis.set_drive_pid(-5, DRIVE_SPEED, true);
+  chassis.set_turn_pid(40, TURN_SPEED);
   chassis.wait_drive();
-  intake = 75;
-  pros::delay(400);
-  intake = 0;
-  pros::delay(200);
-  intake = 75;
-  pros::delay(400);
-  intake = 0;
+  chassis.set_drive_pid(54, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  angleChanger.set_value(true);
+  chassis.set_turn_pid(-40, TURN_SPEED);
+  chassis.wait_drive();
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
   // shotBlocker.set_value(true);
   // intake and shoot 3 stack
-  intakeLift.set_value(true);
-  chassis.set_turn_pid(-137, TURN_SPEED);
+  chassis.set_turn_pid(40, TURN_SPEED);
   chassis.wait_drive();
+  actualIntakeLift.set_value(true);
   chassis.set_drive_pid(22, DRIVE_SPEED, true);
   chassis.wait_drive();
-  intakeLift.set_value(false);
-  pros::delay(300);
-  chassis.set_swing_pid(ez::LEFT_SWING, -129, TURN_SPEED);
+  actualIntakeLift.set_value(false);
+  pros::delay(700);
+  chassis.set_turn_pid(-70, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(34.75, DRIVE_SPEED, true);
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
+  chassis.set_turn_pid(-130, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_turn_pid(-177, TURN_SPEED);
+  chassis.set_drive_pid(-11, DRIVE_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(9.25, DRIVE_SPEED);
+  
+  chassis.set_swing_pid(ez::LEFT_SWING, -180, SWING_SPEED);
   chassis.wait_drive();
-  pros::delay(200);
-  chassis.set_swing_pid(ez::RIGHT_SWING, -86, TURN_SPEED);
+  chassis.set_drive_pid(-5.5, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_drive_pid(-35.5, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(1200);
+  pros::delay(400);
   intake = 0;
-  // shotBlocker.set_value(true);
-  // turn to next 3 stack and shoot and rollers and intake and shi
-  chassis.set_drive_pid(1, DRIVE_SPEED, true);
+  actualIntakeLift.set_value(true);
+  chassis.set_swing_pid(ez::RIGHT_SWING, -190, SWING_SPEED);
   chassis.wait_drive();
-  chassis.set_turn_pid(-68, TURN_SPEED);
+  intake = -127;
+  chassis.set_drive_pid(5, DRIVE_SPEED, true);
   chassis.wait_drive();
-  intakeLift.set_value(true);
+  actualIntakeLift.set_value(false);
+  pros::delay(700);
+  // Last roller 
+  chassis.set_turn_pid(-90, TURN_SPEED);
+  chassis.wait_drive();
+  chassis.set_drive_pid(-15, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  pros::delay(400);
+  intake = 0;
+  chassis.set_swing_pid(ez::RIGHT_SWING, -180, SWING_SPEED);
+  chassis.wait_drive();
+  intake = -127;
+  angleChanger.set_value(false);
   chassis.set_drive_pid(37, DRIVE_SPEED, true);
   chassis.wait_drive();
-  intakeLift.set_value(false);
-  pros::delay(300);
-  chassis.set_drive_pid(8, DRIVE_SPEED, true);
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
+  chassis.set_swing_pid(ez::LEFT_SWING, -90, SWING_SPEED);
   chassis.wait_drive();
-  chassis.set_swing_pid(ez::RIGHT_SWING, -105, TURN_SPEED);
+  chassis.set_drive_pid(34, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_drive_pid(20.5, DRIVE_SPEED, true);
+  chassis.set_drive_pid(-34, DRIVE_SPEED, true);
   chassis.wait_drive();
-  pros::delay(200);
-  chassis.set_swing_pid(ez::LEFT_SWING, -176, TURN_SPEED);
+  chassis.set_swing_pid(ez::LEFT_SWING, -180, SWING_SPEED);
   chassis.wait_drive();
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
   chassis.set_drive_pid(-41, DRIVE_SPEED, true);
   chassis.wait_drive();
+  chassis.set_turn_pid(-130, TURN_SPEED);
+  chassis.wait_drive();
   // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(1200);
-  intake = 0;
   // shotBlocker.set_value(true);
   // itnake and shoot 3 discs
   chassis.set_drive_pid(36, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_turn_pid(-310, TURN_SPEED);
+  angleChanger.set_value(true);
+  chassis.set_turn_pid(-210, TURN_SPEED);
   chassis.wait_drive();
-  chassis.set_drive_pid(56, 100, true);
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
+  chassis.set_swing_pid(ez::LEFT_SWING, -180, SWING_SPEED);
   chassis.wait_drive();
-  chassis.set_turn_pid(-220, TURN_SPEED);
+  chassis.set_drive_pid(20, DRIVE_SPEED, true);
   chassis.wait_drive();
-  chassis.set_drive_pid(6, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(400);
-  intake = 0;
-  chassis.set_drive_pid(-6, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  intake = 75;
-  pros::delay(400);
-  intake = 0;
-  pros::delay(200);
-  intake = 75;
-  pros::delay(400);
-  intake = 0;
-  // shotBlocker.set_value(true);
-  // 2nd to last 3 stack
-  chassis.set_turn_pid(-311, TURN_SPEED);
-  chassis.wait_drive();
-  intakeLift.set_value(true);
-  chassis.set_drive_pid(25, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  intakeLift.set_value(false);
-  pros::delay(300);
-  chassis.set_drive_pid(37, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  chassis.set_swing_pid(ez::RIGHT_SWING, -264, TURN_SPEED);
-  chassis.wait_drive();
-  chassis.set_drive_pid(-36, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(1200);
-  intake = 0;
-  // shotBlocker.set_value(true);
-  // last 3 stack
-  chassis.set_drive_pid(1, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  chassis.set_swing_pid(ez::LEFT_SWING, -243, TURN_SPEED);
-  chassis.wait_drive();
-  intakeLift.set_value(true);
-  chassis.set_drive_pid(34, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  intakeLift.set_value(false);
-  pros::delay(900);
-  chassis.set_drive_pid(-34, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  chassis.set_swing_pid(ez::LEFT_SWING, -265, TURN_SPEED);
-  chassis.wait_drive();
-  // shotBlocker.set_value(false);
-  intake = 75;
-  pros::delay(1200);
-  intake = 0;
-  // shotBlocker.set_value(true);
-  // last disc
-  chassis.set_swing_pid(ez::LEFT_SWING, -227, TURN_SPEED);
-  chassis.wait_drive();
-  skillSpeed = false;
-  oneSpeed = true;
-  chassis.set_drive_pid(47, DRIVE_SPEED, true);
-  chassis.wait_drive();
-  chassis.set_swing_pid(ez::LEFT_SWING, -250, TURN_SPEED);
+  angleChanger.set_value(false);
+  chassis.set_turn_pid(-270, TURN_SPEED);
   chassis.wait_drive();
   // shotBlocker.set_value(false);
   intake = 127;
-  pros::delay(200);
-  intake = 0;
+  pros::delay(500);
+  intake = -127;
+  chassis.set_drive_pid(-6, DRIVE_SPEED, true);
+  chassis.wait_drive();
+  chassis.set_turn_pid(-400, TURN_SPEED);
+  chassis.wait_drive();
+  actualIntakeLift.set_value(true);
   // shotBlocker.set_value(true);
-  chassis.set_swing_pid(ez::RIGHT_SWING, -130, DRIVE_SPEED);
+  // 2nd to last 3 stack
+  chassis.set_drive_pid(25, DRIVE_SPEED, true);
   chassis.wait_drive();
-  expansion1.set_value(true);
-  chassis.set_drive_pid(-27, DRIVE_SPEED, true);
+  angleChanger.set_value(true);
+  actualIntakeLift.set_value(false);
+  pros::delay(700);
+  chassis.set_turn_pid(-270, TURN_SPEED);
   chassis.wait_drive();
+  intake = 127;
+  pros::delay(500);
+  intake = -127;
+  chassis.set_swing_pid(ez::LEFT_SWING, -320, SWING_SPEED);
+  chassis.wait_drive();
+  expansion.set_value(true);
+  chassis.set_drive_pid(-25, DRIVE_SPEED, true);
+  chassis.wait_drive();
+ 
 }
 
 ///

@@ -540,7 +540,7 @@ void initialize() {
   transmission.set_value(true);
   expansion.set_value(false);
   expansion1.set_value(false);
-  intakeLift.set_value(false);
+  angleChanger.set_value(true);
   actualIntakeLift.set_value(false);
   
   // Print our branding over your terminal :D
@@ -611,7 +611,7 @@ void autoFlywheelDrive(double velocity) {
   // double velocity = *velo;
   // runFlywheel(velocity);
 
-  double change = .15;
+  double change = .12;
   double currentVelo = flywheel.get_actual_velocity();
   double error = velocity - currentVelo;
   double output = flyDriveD + change * error;
@@ -723,9 +723,9 @@ void autonomous() {
   chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps
                                              // autonomous consistency.
 
-  // Skills(); // Calls selected auton from autonomous selector.
+  Skills(); // Calls selected auton from autonomous selector.
   // left_awp();
-  leftAuton();
+  // leftAuton();
   // rightAuton();
 }
 void motor_check_overheat() {
@@ -764,12 +764,8 @@ void opcontrol() {
     /*Initialize the alien theme
      * 210: a green HUE value
      * NULL: use the default font (LV_FONT_DEFAULT)*/
-    
-    
-    
     actualIntakeLift.set_value(false);
-    intakeLift.set_value(true);
-    expansion1.set_value(false);
+    angleChanger.set_value(false);
     expansion.set_value(false);
     chassis.set_drive_brake(MOTOR_BRAKE_COAST);
     float up_down = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -821,16 +817,13 @@ void opcontrol() {
     // if (buttonB) {
     //   expansionBottom.set_value(true);
     // }
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
       expansion.set_value(true);
       // expansionBottom.set_value(true);
     }
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-      expansion1.set_value(true);
       // expansionBottom.set_value(true);
-    }
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)){
-      intakeLift.set_value(false);
+      angleChanger.set_value(false);
     }
     // chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
