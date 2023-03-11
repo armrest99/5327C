@@ -66,8 +66,8 @@ const int SWING_SPEED = 90;
 // }
 
 void exit_condition_defaults() {
-  chassis.set_exit_condition(chassis.turn_exit, 10, 1, 100, 7, 50, 500);
-  chassis.set_exit_condition(chassis.swing_exit, 10, 1, 100, 7, 50, 500);
+  chassis.set_exit_condition(chassis.turn_exit, 10, 3, 100, 7, 50, 500);
+  chassis.set_exit_condition(chassis.swing_exit, 10, 3, 100, 7, 50, 500);
   chassis.set_exit_condition(chassis.drive_exit, 8, 50, 60, 150, 50, 500);
 }
 
