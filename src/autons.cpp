@@ -98,19 +98,19 @@ bool skillsBool = false;
 //Reset encoder positions
 void tare_rot(){
 	while (tare_back == 0){
-		tare_back = back_rot.get_value();
+		tare_back = -back_rot.get_value();
 		pros::delay(1);
 	}
 	while (tare_left == 0){
-		tare_left = left_rot.get_value();
+		tare_left = -left_rot.get_value();
 		pros::delay(1);
 	}
 }
 float back_pos(){
- 	return back_rot.get_value() - tare_back;
+ 	return -back_rot.get_value() - tare_back;
 }
 float left_pos(){
- 	return left_rot.get_value() - tare_left;
+ 	return -left_rot.get_value() - tare_left;
 }
 double getAngle(){
 	double angle = inertial.get_heading();
