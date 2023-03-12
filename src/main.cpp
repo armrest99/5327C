@@ -537,7 +537,7 @@ void initialize() {
   lv_init();
   
   
-  transmission.set_value(true);
+  transmission.set_value(false);
   expansion.set_value(false);
   expansion1.set_value(false);
   angleChanger.set_value(true);
@@ -644,14 +644,14 @@ void autoFlywheelDrive(double velocity) {
 void toggleIntake() {
   if (inSpeed == 0) {
     inSpeed = 1;
-    intake.move_velocity(-600);
+    intake = -127;
   } else if (inSpeed == 1 && goingDown == false) {
     inSpeed = 2;
     intake = 0;
   } else if (inSpeed == 2) {
     inSpeed = 1;
     goingDown = true;
-    intake.move_velocity(600);
+    intake = 127;
   } else if (inSpeed == 1 && goingDown == true) {
     inSpeed = 0;
     goingDown = false;
@@ -716,7 +716,7 @@ void toggleIntake() {
  * from where it left off.
  */
 void autonomous() {
-  inertial.reset();
+  // inertial.reset();
   chassis.reset_pid_targets();               // Resets PID targets to 0
   chassis.reset_gyro();                      // Reset gyro position to 0
   chassis.reset_drive_sensor();              // Reset drive sensors to 0
@@ -774,7 +774,7 @@ void opcontrol() {
     float turnY = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
     transmission.set_value(true);
 
-    autoFlywheelDrive(500);
+    autoFlywheelDrive(450);
     // pros::delay(100);
     isAuton = false;
     buttonB = controller.get_digital(pros::E_CONTROLLER_DIGITAL_B);
